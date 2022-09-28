@@ -12,6 +12,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
@@ -30,6 +32,16 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         GoogleSignIn.getClient(this, gso)
+    }
+
+    private val onCompleteListener = { task: Task<AuthResult> ->
+        when {
+            task.isSuccessful -> moveToMainPage(task.result.user)
+            else -> {
+                Log.w(TAG, "signInAndSignUp: Failure", task.exception)
+                Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private val googleLoginLauncher = registerForActivityResult(
@@ -70,36 +82,18 @@ class LoginActivity : AppCompatActivity() {
     private fun signInWithEmail() {
         auth
             .signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
-            .addOnCompleteListener { task ->
-                when {
-                    task.isSuccessful -> moveToMainPage(task.result.user)
-                    else -> {
-                        Log.w(TAG, "signInAndSignUp: Failure", task.exception)
-                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+            .addOnCompleteListener(onCompleteListener)
     }
 
     private fun googleLogin() = googleLoginLauncher.launch(googleSignInClient.signInIntent)
 
-    private fun signInWithGoogleAccount(account: GoogleSignInAccount?) {
-        if (account == null) return
-
-        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+    private fun signInWithGoogleAccount(account: GoogleSignInAccount?) = kotlin.runCatching {
+        val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth
             .signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                when {
-                    task.isSuccessful -> moveToMainPage(task.result.user)
-                    else -> {
-                        Log.w(TAG, "signInAndSignUp: Failure", task.exception)
-                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+            .addOnCompleteListener(onCompleteListener)
     }
-
+  
     private fun moveToMainPage(user: FirebaseUser?) {
         if (user != null) {
             startActivity(Intent(this, MainActivity::class.java))
