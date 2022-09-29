@@ -5,8 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -14,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
@@ -25,6 +31,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+
+    /**
+     * Google 로그인 client
+     */
     private val googleSignInClient: GoogleSignInClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -34,6 +44,14 @@ class LoginActivity : AppCompatActivity() {
         GoogleSignIn.getClient(this, gso)
     }
 
+    /**
+     * Facebook 로그인 callback manager
+     */
+    private val fbCallbackManager: CallbackManager by lazy { CallbackManager.Factory.create() }
+
+    /**
+     * Firebase 로그인에 공통적으로 쓰이는 complete listener
+     */
     private val onCompleteListener = { task: Task<AuthResult> ->
         when {
             task.isSuccessful -> moveToMainPage(task.result.user)
@@ -44,6 +62,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Google 로그인 후 결과 받는 callback
+     */
     private val googleLoginLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -59,12 +80,16 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.apply {
-            btnLoginEmail.setOnClickListener { signInAndSignUp() }
+            btnLoginEmail.setOnClickListener { signUpWithEmail() }
             btnLoginGoogle.setOnClickListener { googleLogin() }
+            btnLoginFacebook.setOnClickListener { facebookLogin() }
         }
     }
 
-    private fun signInAndSignUp() {
+    /**
+     * email 로그인 시 먼저 signUp을 시도하고 이미 있는 유저면 signIn
+     */
+    private fun signUpWithEmail() {
         auth
             .createUserWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
             .addOnCompleteListener { task ->
@@ -79,21 +104,61 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Facebook 계정에 로그인해서 계정 정보 받아옴
+     */
+    private fun facebookLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(this, listOf("public_profile", "email"))
+        LoginManager.getInstance().registerCallback(fbCallbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult?) {
+                signInWithFacebookAccount(result?.accessToken)
+            }
+
+            override fun onCancel() {
+                Log.i(TAG, "onCancel: Facebook login is canceled")
+            }
+
+            override fun onError(error: FacebookException?) {
+                error?.printStackTrace()
+            }
+
+        })
+    }
+
+    /**
+     * Google 계정에 로그인해서 계정 정보를 callback으로 받아옴
+     */
+    private fun googleLogin() = googleLoginLauncher.launch(googleSignInClient.signInIntent)
+
+    /**
+     * 입력한 이메일과 비밀번호로 Firebase 로그인 
+     */
     private fun signInWithEmail() {
         auth
             .signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
             .addOnCompleteListener(onCompleteListener)
     }
 
-    private fun googleLogin() = googleLoginLauncher.launch(googleSignInClient.signInIntent)
+    /**
+     * Facebook 계정 정보로 Firebase 로그인
+     */
+    private fun signInWithFacebookAccount(token: AccessToken?) = kotlin.runCatching {
+        val credential = FacebookAuthProvider.getCredential(token?.token!!)
+        auth
+            .signInWithCredential(credential)
+            .addOnCompleteListener(onCompleteListener)
+    }
 
+    /**
+     * Google 계정 정보로 Firebase 로그인
+     */
     private fun signInWithGoogleAccount(account: GoogleSignInAccount?) = kotlin.runCatching {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth
             .signInWithCredential(credential)
             .addOnCompleteListener(onCompleteListener)
     }
-  
+
     private fun moveToMainPage(user: FirebaseUser?) {
         if (user != null) {
             startActivity(Intent(this, MainActivity::class.java))
