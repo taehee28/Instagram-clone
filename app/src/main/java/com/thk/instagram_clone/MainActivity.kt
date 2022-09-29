@@ -1,5 +1,6 @@
 package com.thk.instagram_clone
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             viewPager.apply {
                 adapter = MainViewPager(this@MainActivity)
                 isUserInputEnabled = false
-                offscreenPageLimit = 4
+                offscreenPageLimit = 3
             }
 
             bottomNavigation.setOnItemSelectedListener(this@MainActivity)
@@ -43,16 +44,16 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
                 binding.viewPager.setCurrentItem(1, false)
                 true
             }
-//            R.id.action_add_photo -> {
-//                binding.viewPager.setCurrentItem(0, false)
-//                true
-//            }
+            R.id.action_add_photo -> {
+                startActivity(Intent(this, AddPhotoActivity::class.java))
+                true
+            }
             R.id.action_favorite_alarm -> {
-                binding.viewPager.setCurrentItem(3, false)
+                binding.viewPager.setCurrentItem(2, false)
                 true
             }
             R.id.action_account -> {
-                binding.viewPager.setCurrentItem(4, false)
+                binding.viewPager.setCurrentItem(3, false)
                 true
             }
             else -> false
@@ -61,15 +62,14 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 }
 
 class MainViewPager(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
-    override fun getItemCount() = 5
+    override fun getItemCount() = 4
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> DetailViewFragment.newInstance()
             1 -> GridFragment.newInstance()
-            2 -> DetailViewFragment.newInstance()   // 임시
-            3 -> AlarmFragment.newInstance()
-            4 -> AccountFragment.newInstance()
+            2 -> AlarmFragment.newInstance()
+            3 -> AccountFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
     }
