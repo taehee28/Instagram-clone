@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.firebase.firestore.FirebaseFirestore
 import com.thk.instagram_clone.GlideApp
-import com.thk.instagram_clone.R
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.instagram_clone.model.ContentDto
@@ -93,7 +92,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
 
                 tvDescription.text = item.description
 
-                tvLikeCount.text = item.favoriteCount.toString()
+                tvLikeCount.text = item.likeCount.toString()
             }
         }
     }

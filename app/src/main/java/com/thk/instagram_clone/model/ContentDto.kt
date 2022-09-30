@@ -6,7 +6,8 @@ data class ContentDto(
     val uid: String? = "",
     val userId: String? = "",
     val timestamp: Long = 0,
-    val favoriteCount: Int = 0
+    val likeCount: Int = 0,
+    val isLiked: Boolean = false
 ) {
     data class Comment(
         val uid: String = "",
