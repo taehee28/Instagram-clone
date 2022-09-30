@@ -9,8 +9,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.thk.instagram_clone.databinding.ActivityAddPhotoBinding
+import com.thk.instagram_clone.model.ContentDto
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,6 +20,7 @@ class AddPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPhotoBinding
 
     private val storage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private var photoUri: Uri? = null
 
     private val albumLauncher = registerForActivityResult(
@@ -51,9 +54,24 @@ class AddPhotoActivity : AppCompatActivity() {
         val fileName = createFileName()
         val storageRef = storage.reference.child("images").child(fileName)
 
-        storageRef.putFile(it).addOnSuccessListener {
-            Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
-        }
+        storageRef
+            .putFile(it)
+            .continueWithTask { storageRef.downloadUrl }
+            .addOnSuccessListener { uri ->
+                val contentDto = ContentDto(
+                    imageUrl = uri.toString(),
+                    uid = FbAuth().currentUser?.uid,
+                    userId = FbAuth().currentUser?.email,
+                    description = binding.etDescription.text.toString(),
+                    timestamp = System.currentTimeMillis()
+                )
+
+                // 포스트 자체를 저장
+                firestore.collection("images").document().set(contentDto)
+
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
     } ?: Toast.makeText(this, getString(R.string.no_selected_image_path), Toast.LENGTH_SHORT).show()
 
     /**
