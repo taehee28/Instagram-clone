@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.firebase.firestore.FirebaseFirestore
+import com.thk.instagram_clone.FbAuth
 import com.thk.instagram_clone.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
@@ -71,25 +72,31 @@ class DetailViewFragment : Fragment() {
             }
     }
 
-    private val onLikeClicked = { uid: String?, isSelected: Boolean ->
-        if (!uid.isNullOrBlank()) {
+    private val onLikeClicked = { countentUid: String?, isSelected: Boolean ->
+        if (!countentUid.isNullOrBlank()) {
             // uid로 저장된 doc(업로드한 글) 찾아와서
             // doc을 ContentDto로 변경하고
             // ContentDto를 수정해서
             // 수정된 Dto를 바탕으로 doc이 수정될 수 있게
             // transaction으로 set 해줌
 
-            Log.d(TAG, "onLikeClicked: uid = $uid")
-
-            val tsDoc = firestore.collection("images").document(uid)
+            val tsDoc = firestore.collection("images").document(countentUid)
 
             firestore.runTransaction { transaction ->
                 val item = transaction.get(tsDoc).toObject(ContentDto::class.java) ?: return@runTransaction
+
+                val isContains = FbAuth().currentUser?.uid?.let {
+                    if (isSelected) item.likedUsers.put(it, true) else item.likedUsers.remove(it)
+                    item.likedUsers.contains(it)
+                }
+
+                // null이라는 것은 로그인된 유저의 uid가 없다는것 == 비정상
+                isContains ?: return@runTransaction
+
                 transaction.set(
                     tsDoc,
                     item.copy(
-                        likeCount = if (isSelected) item.likeCount + 1 else item.likeCount - 1,
-                        liked = isSelected
+                        likeCount = item.likeCount + if (isContains) 1 else -1
                     )
                 )
             }
@@ -106,21 +113,18 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
 
     inner class DetailViewHolder(private val binding: ItemDetailViewBinding) : ViewHolder(binding.root) {
-        private var uid: String? = null
+        private var contentUid: String? = null
 
         init {
             // onClick 설정하기
             binding.btnLike.setOnClickListener { view ->
-                Log.d(TAG, "before selected: ${view.isSelected}")
                 view.isSelected = !view.isSelected
-                Log.d(TAG, "after selected: ${view.isSelected}")
-                likeClickEvent?.invoke(uid, view.isSelected)
+                likeClickEvent?.invoke(contentUid, view.isSelected)
             }
         }
 
         internal fun bind(item: ContentDto) {
-            uid = item.contentUid
-            Log.d(TAG, "bind: contentUid = $uid")
+            contentUid = item.contentUid
 
             binding.apply {
                 tvUserName.text = item.userId ?: "null"
@@ -138,7 +142,9 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
 
                 tvLikeCount.text = item.likeCount.toString()
 
-                btnLike.isSelected = item.liked
+                FbAuth().currentUser?.uid?.also {
+                    btnLike.isSelected = item.likedUsers.contains(it)
+                }
             }
         }
     }
@@ -163,6 +169,6 @@ class DetailDiffUtil : DiffUtil.ItemCallback<ContentDto>() {
     }
 
     override fun areContentsTheSame(oldItem: ContentDto, newItem: ContentDto): Boolean {
-        return (oldItem.likeCount == newItem.likeCount) or (oldItem.liked == newItem.liked)
+        return (oldItem.likeCount == newItem.likeCount) or (oldItem.likedUsers == newItem.likedUsers)
     }
 }
