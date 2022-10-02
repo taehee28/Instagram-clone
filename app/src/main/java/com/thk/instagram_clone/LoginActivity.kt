@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
      * email 로그인 시 먼저 signUp을 시도하고 이미 있는 유저면 signIn
      */
     private fun signUpWithEmail() {
-        FbAuth()
+        Firebase.auth
             .createUserWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
             .addOnCompleteListener { task ->
                 when {
@@ -132,7 +132,7 @@ class LoginActivity : AppCompatActivity() {
      * 입력한 이메일과 비밀번호로 Firebase 로그인 
      */
     private fun signInWithEmail() {
-        FbAuth()
+        Firebase.auth
             .signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
             .addOnCompleteListener(onCompleteListener)
     }
@@ -142,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun signInWithFacebookAccount(token: AccessToken?) = kotlin.runCatching {
         val credential = FacebookAuthProvider.getCredential(token?.token!!)
-        FbAuth()
+        Firebase.auth
             .signInWithCredential(credential)
             .addOnCompleteListener(onCompleteListener)
     }
@@ -152,7 +152,7 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun signInWithGoogleAccount(account: GoogleSignInAccount?) = kotlin.runCatching {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
-        FbAuth()
+        Firebase.auth
             .signInWithCredential(credential)
             .addOnCompleteListener(onCompleteListener)
     }

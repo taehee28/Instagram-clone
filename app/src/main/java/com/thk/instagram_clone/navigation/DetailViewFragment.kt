@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.firebase.firestore.FirebaseFirestore
 import com.thk.instagram_clone.FbAuth
+import com.thk.instagram_clone.Firebase
 import com.thk.instagram_clone.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
@@ -21,7 +22,6 @@ class DetailViewFragment : Fragment() {
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!
 
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val listAdapter = DetailListAdapter()
 
     companion object {
@@ -54,7 +54,7 @@ class DetailViewFragment : Fragment() {
      * Firestore로부터 post 목록을 가져와 list dapter에 전달 
      */
     private fun getItemListFromFirestore() {
-        firestore
+        Firebase.firestore
             .collection("images")
             .orderBy("timestamp")
             .addSnapshotListener { value, error ->
@@ -80,12 +80,12 @@ class DetailViewFragment : Fragment() {
             // 수정된 Dto를 바탕으로 doc이 수정될 수 있게
             // transaction으로 set 해줌
 
-            val tsDoc = firestore.collection("images").document(countentUid)
+            val tsDoc = Firebase.firestore.collection("images").document(countentUid)
 
-            firestore.runTransaction { transaction ->
+            Firebase.firestore.runTransaction { transaction ->
                 val item = transaction.get(tsDoc).toObject(ContentDto::class.java) ?: return@runTransaction
 
-                val isContains = FbAuth().currentUser?.uid?.let {
+                val isContains = Firebase.auth.currentUser?.uid?.let {
                     if (isSelected) item.likedUsers.put(it, true) else item.likedUsers.remove(it)
                     item.likedUsers.contains(it)
                 }
@@ -142,7 +142,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
 
                 tvLikeCount.text = item.likeCount.toString()
 
-                FbAuth().currentUser?.uid?.also {
+                Firebase.auth.currentUser?.uid?.also {
                     btnLike.isSelected = item.likedUsers.contains(it)
                 }
             }

@@ -19,8 +19,6 @@ import java.util.*
 class AddPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPhotoBinding
 
-    private val storage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private var photoUri: Uri? = null
 
     private val albumLauncher = registerForActivityResult(
@@ -52,7 +50,7 @@ class AddPhotoActivity : AppCompatActivity() {
      */
     private fun uploadContent() = photoUri?.also {
         val fileName = createFileName()
-        val storageRef = storage.reference.child("images").child(fileName)
+        val storageRef = Firebase.storage.reference.child("images").child(fileName)
 
         storageRef
             .putFile(it)
@@ -60,14 +58,14 @@ class AddPhotoActivity : AppCompatActivity() {
             .addOnSuccessListener { uri ->
                 val contentDto = ContentDto(
                     imageUrl = uri.toString(),
-                    uid = FbAuth().currentUser?.uid,
-                    userId = FbAuth().currentUser?.email,
+                    uid = Firebase.auth.currentUser?.uid,
+                    userId = Firebase.auth.currentUser?.email,
                     description = binding.etDescription.text.toString(),
                     timestamp = System.currentTimeMillis()
                 )
 
                 // 포스트 자체를 저장
-                firestore.collection("images").document().set(contentDto)
+                Firebase.firestore.collection("images").document().set(contentDto)
 
                 setResult(Activity.RESULT_OK)
                 finish()
