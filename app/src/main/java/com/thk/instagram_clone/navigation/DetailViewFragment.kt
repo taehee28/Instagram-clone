@@ -19,7 +19,7 @@ class DetailViewFragment : Fragment() {
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!
 
-    private val listAdapter = DetailListAdapter()
+    private val listAdapter = DetailListAdapter().apply { setHasStableIds(true) }
 
     companion object {
         @JvmStatic
@@ -34,7 +34,6 @@ class DetailViewFragment : Fragment() {
 
         binding.rvDetailList.adapter = listAdapter.apply {
             likeClickEvent = onLikeClicked
-            setHasStableIds(true)
         }
 
         getItemListFromFirestore()

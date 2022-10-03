@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,22 +23,14 @@ class AccountFragment : Fragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
+    private val args: AccountFragmentArgs by navArgs()
+    private val uid: String? by lazy { args.uid.ifBlank { Firebase.auth.currentUser?.uid } }
+
     private val listAdapter = PostListAdapter()
-    private var uid: String? = null
 
     companion object {
         @JvmStatic
-        fun newInstance(uid: String?) =
-            AccountFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_UID, uid)
-                }
-            }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let { uid = it.getString(ARG_UID) }
+        fun newInstance() = AccountFragment()
     }
 
     override fun onCreateView(

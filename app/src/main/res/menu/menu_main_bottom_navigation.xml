@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_home"
+        android:id="@+id/detailViewFragment"
         android:icon="@drawable/ic_home"
         android:enabled="true"
         android:title="@string/home"/>
@@ -13,19 +13,19 @@
         android:title="@string/search"/>
 
     <item
-        android:id="@+id/action_add_photo"
+        android:id="@+id/addPhotoActivity"
         android:icon="@drawable/ic_add_a_photo"
         android:enabled="true"
         android:title="@string/upload_image"/>
 
     <item
-        android:id="@+id/action_favorite_alarm"
+        android:id="@+id/alarmFragment"
         android:icon="@drawable/ic_favorite"
         android:enabled="true"
         android:title="@string/favorite"/>
 
     <item
-        android:id="@+id/action_account"
+        android:id="@+id/accountFragment"
         android:icon="@drawable/ic_account"
         android:enabled="true"
         android:title="@string/account"/>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/detailViewFragment">
+
+    <fragment
+        android:id="@+id/detailViewFragment"
+        android:name="com.thk.instagram_clone.navigation.DetailViewFragment"
+        android:label="DetailViewFragment"
+        tools:layout="@layout/fragment_detail_view"/>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.thk.instagram_clone.navigation.AccountFragment"
+        android:label="AccountFragment" >
+            <argument
+                android:name="uid"
+                app:argType="string"
+                android:defaultValue=""/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/alarmFragment"
+        android:name="com.thk.instagram_clone.navigation.AlarmFragment"
+        android:label="AlarmFragment" />
+
+    <activity
+        android:id="@+id/addPhotoActivity"
+        android:name="com.thk.instagram_clone.AddPhotoActivity"
+        android:label="activity_add_photo"
+        tools:layout="@layout/activity_add_photo" />
+
+</navigation>
