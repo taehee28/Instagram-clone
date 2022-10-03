@@ -9,8 +9,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.firebase.firestore.FirebaseFirestore
-import com.thk.instagram_clone.FbAuth
 import com.thk.instagram_clone.Firebase
 import com.thk.instagram_clone.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding

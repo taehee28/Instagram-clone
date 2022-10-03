@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
-import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.thk.instagram_clone.databinding.ActivityMainBinding
 import com.thk.instagram_clone.navigation.AccountFragment
 import com.thk.instagram_clone.navigation.AlarmFragment
@@ -25,7 +24,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
         binding.apply {
             viewPager.apply {
-                adapter = MainViewPager(this@MainActivity)
+                adapter = MainViewPageAdapter(this@MainActivity)
                 isUserInputEnabled = false
                 offscreenPageLimit = 3
             }
@@ -61,7 +60,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     }
 }
 
-class MainViewPager(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
+class MainViewPageAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
     override fun getItemCount() = 4
 
     override fun createFragment(position: Int): Fragment {
@@ -69,7 +68,7 @@ class MainViewPager(fragmentActivity: FragmentActivity) : FragmentStateAdapter(f
             0 -> DetailViewFragment.newInstance()
             1 -> GridFragment.newInstance()
             2 -> AlarmFragment.newInstance()
-            3 -> AccountFragment.newInstance()
+            3 -> AccountFragment.newInstance(Firebase.auth.currentUser?.uid)
             else -> throw IllegalArgumentException()
         }
     }
