@@ -84,6 +84,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // 자동로그인 시도
+        moveToMainPage(Firebase.auth.currentUser)
+    }
+
     /**
      * email 로그인 시 먼저 signUp을 시도하고 이미 있는 유저면 signIn
      */
@@ -160,6 +166,7 @@ class LoginActivity : AppCompatActivity() {
     private fun moveToMainPage(user: FirebaseUser?) {
         if (user != null) {
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 }
