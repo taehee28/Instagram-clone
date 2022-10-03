@@ -1,7 +1,6 @@
 package com.thk.instagram_clone.navigation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -61,7 +60,6 @@ class DetailViewFragment : Fragment() {
                         it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
                     } ?: throw IllegalArgumentException("Failed to get list(null returned)")
                 }.onSuccess { list ->
-                    Log.d(TAG, "getItemListFromFirestore: $list")
                     listAdapter.submitList(list)
                 }.onFailure { e ->
                     e.printStackTrace()
