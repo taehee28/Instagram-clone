@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.thk.instagram_clone.Firebase
-import com.thk.instagram_clone.GlideApp
+import com.thk.instagram_clone.util.Firebase
+import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.instagram_clone.model.ContentDto

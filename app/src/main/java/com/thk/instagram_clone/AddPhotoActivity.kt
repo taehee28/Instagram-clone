@@ -7,14 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.thk.instagram_clone.databinding.ActivityAddPhotoBinding
 import com.thk.instagram_clone.model.ContentDto
 import java.text.SimpleDateFormat
 import java.util.*
+import com.thk.instagram_clone.util.Firebase
 
 class AddPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPhotoBinding

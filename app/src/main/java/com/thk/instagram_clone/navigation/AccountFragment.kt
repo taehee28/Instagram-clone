@@ -11,8 +11,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.thk.instagram_clone.Firebase
-import com.thk.instagram_clone.GlideApp
+import com.thk.instagram_clone.util.Firebase
+import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
 
@@ -44,6 +44,11 @@ class AccountFragment : Fragment() {
         getPostListFromFirestore()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     override fun onDestroyView() {

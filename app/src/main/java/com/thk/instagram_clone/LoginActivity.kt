@@ -20,11 +20,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.thk.instagram_clone.databinding.ActivityLoginBinding
+import com.thk.instagram_clone.util.Firebase
 
 class LoginActivity : AppCompatActivity() {
     private val TAG = LoginActivity::class.simpleName

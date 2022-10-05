@@ -1,4 +1,4 @@
-package com.thk.instagram_clone
+package com.thk.instagram_clone.util
 
 import com.bumptech.glide.module.AppGlideModule
 
