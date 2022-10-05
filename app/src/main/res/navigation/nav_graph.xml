@@ -9,7 +9,11 @@
         android:id="@+id/detailViewFragment"
         android:name="com.thk.instagram_clone.navigation.DetailViewFragment"
         android:label="DetailViewFragment"
-        tools:layout="@layout/fragment_detail_view"/>
+        tools:layout="@layout/fragment_detail_view">
+        <action
+            android:id="@+id/action_detailViewFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.thk.instagram_clone.navigation.AccountFragment"

@@ -6,18 +6,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".navigation.DetailViewFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
 
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            app:contentInsetStart="0dp"
-            android:paddingVertical="4dp"
-            app:logo="@drawable/logo_title" />
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="35dp"-->
+<!--            app:contentInsetStart="0dp"-->
+<!--            android:paddingVertical="4dp"-->
+<!--            app:logo="@drawable/logo_title" />-->
 
-    </com.google.android.material.appbar.AppBarLayout>
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_detailList"

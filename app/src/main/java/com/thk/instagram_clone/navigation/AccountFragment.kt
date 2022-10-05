@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -41,14 +44,12 @@ class AccountFragment : Fragment() {
 
         binding.rvPostList.adapter = listAdapter.apply { /*todo: onClick*/ }
 
-        getPostListFromFirestore()
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        getPostListFromFirestore()
     }
 
     override fun onDestroyView() {
