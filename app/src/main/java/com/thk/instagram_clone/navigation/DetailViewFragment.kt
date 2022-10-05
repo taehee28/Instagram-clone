@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -34,6 +36,7 @@ class DetailViewFragment : Fragment() {
 
         binding.rvDetailList.adapter = listAdapter.apply {
             likeClickEvent = onLikeClicked
+            profileClickEvent = onProfileClicked
         }
 
         getItemListFromFirestore()
@@ -97,6 +100,13 @@ class DetailViewFragment : Fragment() {
             }
         }
     }
+
+    private val onProfileClicked = { userUid: String? ->
+        if (!userUid.isNullOrBlank()) {
+            val action = DetailViewFragmentDirections.actionDetailViewFragmentToProfileViewFragment(userUid)
+            findNavController().navigate(action)
+        }
+    }
 }
 
 /**
@@ -106,20 +116,29 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
     private val TAG = DetailListAdapter::class.simpleName
 
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
+    var profileClickEvent: ((String?) -> Unit)? = null
 
     inner class DetailViewHolder(private val binding: ItemDetailViewBinding) : ViewHolder(binding.root) {
         private var contentUid: String? = null
+        private var userUid: String? = null
 
         init {
             // onClick 설정하기
-            binding.btnLike.setOnClickListener { view ->
-                view.isSelected = !view.isSelected
-                likeClickEvent?.invoke(contentUid, view.isSelected)
+            binding.apply {
+                btnLike.setOnClickListener { view ->
+                    view.isSelected = !view.isSelected
+                    likeClickEvent?.invoke(contentUid, view.isSelected)
+                }
+
+                ivProfile.setOnClickListener {
+                    profileClickEvent?.invoke(userUid)
+                }
             }
         }
 
         internal fun bind(item: ContentDto) {
             contentUid = item.contentUid
+            userUid = item.uid
 
             binding.apply {
                 tvUserName.text = item.userId ?: "null"

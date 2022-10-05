@@ -14,25 +14,25 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
 
-class AccountFragment : Fragment() {
+class ProfileViewFragment : Fragment() {
     private val TAG = AccountFragment::class.simpleName
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
-    private val uid: String? get() = Firebase.auth.currentUser?.uid
+    private val args: ProfileViewFragmentArgs by navArgs()
+    private val uid: String? by lazy { args.uid.ifBlank { Firebase.auth.currentUser?.uid } }
 
     private val listAdapter = PostListAdapter()
 
     companion object {
         @JvmStatic
-        fun newInstance() = AccountFragment()
+        fun newInstance() = ProfileViewFragment()
     }
 
     override fun onCreateView(
@@ -48,13 +48,25 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupProfileButton()
         getPostListFromFirestore()
-        binding.btnProfile.setOnClickListener { Firebase.auth.signOut() }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    private fun setupProfileButton() = uid?.also {
+        binding.btnProfile.apply {
+            if (it == Firebase.auth.currentUser?.uid) {
+                setText(R.string.signout)
+                setOnClickListener { Firebase.auth.signOut() }
+            } else {
+                setText(R.string.follow)
+                setOnClickListener { /*todo: follow*/ }
+            }
+        }
     }
 
     private fun getPostListFromFirestore() {
@@ -73,44 +85,5 @@ class AccountFragment : Fragment() {
                     error?.printStackTrace()
                 }
             }
-    }
-}
-
-class PostListAdapter : ListAdapter<ContentDto, PostListAdapter.PostViewHolder>(PostDiffUtil()) {
-    inner class PostViewHolder(private val view: ImageView) : RecyclerView.ViewHolder(view) {
-        init {
-            // TODO: setOnClick
-        }
-
-        internal fun bind(item: ContentDto) {
-            GlideApp.with(view)
-                .load(item.imageUrl)
-                .centerCrop()
-                .into(view)
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val size = parent.resources.displayMetrics.widthPixels / 3
-        val imageView = ImageView(parent.context).apply {
-            layoutParams = LinearLayoutCompat.LayoutParams(size, size)
-        }
-
-        return PostViewHolder(imageView)
-    }
-
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-}
-
-class PostDiffUtil : DiffUtil.ItemCallback<ContentDto>() {
-    override fun areItemsTheSame(oldItem: ContentDto, newItem: ContentDto): Boolean {
-        return (oldItem.timestamp == newItem.timestamp) and (oldItem.uid == newItem.uid)
-    }
-
-    override fun areContentsTheSame(oldItem: ContentDto, newItem: ContentDto): Boolean {
-        return oldItem.imageUrl == newItem.imageUrl
     }
 }

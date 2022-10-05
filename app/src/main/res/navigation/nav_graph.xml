@@ -11,17 +11,13 @@
         android:label="DetailViewFragment"
         tools:layout="@layout/fragment_detail_view">
         <action
-            android:id="@+id/action_detailViewFragment_to_accountFragment"
-            app:destination="@id/accountFragment" />
+            android:id="@+id/action_detailViewFragment_to_profileViewFragment"
+            app:destination="@id/profileViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.thk.instagram_clone.navigation.AccountFragment"
         android:label="AccountFragment" >
-            <argument
-                android:name="uid"
-                app:argType="string"
-                android:defaultValue=""/>
     </fragment>
 
     <fragment
@@ -34,5 +30,14 @@
         android:name="com.thk.instagram_clone.AddPhotoActivity"
         android:label="activity_add_photo"
         tools:layout="@layout/activity_add_photo" />
+    <fragment
+        android:id="@+id/profileViewFragment"
+        android:name="com.thk.instagram_clone.navigation.ProfileViewFragment"
+        android:label="ProfileViewFragment" >
+        <argument
+            android:name="uid"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
 
 </navigation>
