@@ -5,19 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
+import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
-import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
 
