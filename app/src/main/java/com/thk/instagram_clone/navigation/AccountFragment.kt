@@ -4,16 +4,22 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.firestore.ListenerRegistration
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
+import com.thk.instagram_clone.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
+import kotlin.properties.Delegates
 
 class AccountFragment : Fragment() {
     private val TAG = AccountFragment::class.simpleName
@@ -23,6 +29,10 @@ class AccountFragment : Fragment() {
     private val uid: String? get() = Firebase.auth.currentUser?.uid
 
     private val listAdapter = PostListAdapter()
+
+    private var profileImageLis: ListenerRegistration? = null
+    private var postListLis: ListenerRegistration? = null
+    private var followListLis: ListenerRegistration? = null
 
     private val albumLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -53,6 +63,7 @@ class AccountFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         getProfileImageFromFirestore()
+        getFollowDataFromFirestore()
         getPostListFromFirestore()
 
         binding.btnProfile.setOnClickListener { Firebase.auth.signOut() }
@@ -64,11 +75,14 @@ class AccountFragment : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
+        profileImageLis?.remove()
+        followListLis?.remove()
+        postListLis?.remove()
         super.onDestroyView()
     }
 
     private fun getProfileImageFromFirestore() = kotlin.runCatching {
-        Firebase.firestore
+        profileImageLis = Firebase.firestore
             .collection("profileImages")
             .document(uid!!)
             .addSnapshotListener { value, error ->
@@ -86,8 +100,29 @@ class AccountFragment : Fragment() {
             }
     }
 
+    private fun getFollowDataFromFirestore() = kotlin.runCatching {
+        followListLis = Firebase.firestore
+            .collection("users")
+            .document(uid!!)
+            .addSnapshotListener { value, error ->
+                kotlin.runCatching {
+                    value?.toObject(FollowDto::class.java)
+                        ?: throw IllegalArgumentException("Failed to get follow list(null returned)")
+                }.onSuccess {
+                    Log.d(TAG, "getFollowDataFromFirestore: listener!!!!!")
+                    binding.apply {
+                        tvFollowingCount.text = it.followingCount.toString()
+                        tvFollowerCount.text = it.followerCount.toString()
+                    }
+                }.onFailure {
+                    it.printStackTrace()
+                    error?.printStackTrace()
+                }
+            }
+    }
+
     private fun getPostListFromFirestore() {
-        Firebase.firestore
+        postListLis = Firebase.firestore
             .collection("images")
             .whereEqualTo("uid", uid)
             .addSnapshotListener { value, error ->
