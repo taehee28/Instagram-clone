@@ -38,6 +38,10 @@
             android:name="uid"
             app:argType="string"
             android:defaultValue=""/>
+        <argument
+            android:name="userId"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 
 </navigation>

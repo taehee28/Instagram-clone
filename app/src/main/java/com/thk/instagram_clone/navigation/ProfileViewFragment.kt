@@ -14,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
@@ -27,6 +28,7 @@ class ProfileViewFragment : Fragment() {
 
     private val args: ProfileViewFragmentArgs by navArgs()
     private val uid: String? by lazy { args.uid.ifBlank { Firebase.auth.currentUser?.uid } }
+    private val userId: String? by lazy { args.userId.ifBlank { Firebase.auth.currentUser?.email } }
 
     private val listAdapter = PostListAdapter()
 
@@ -48,6 +50,7 @@ class ProfileViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).supportActionBar?.subtitle = userId
         setupProfileButton()
         getPostListFromFirestore()
     }

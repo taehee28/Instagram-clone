@@ -101,9 +101,9 @@ class DetailViewFragment : Fragment() {
         }
     }
 
-    private val onProfileClicked = { userUid: String? ->
-        if (!userUid.isNullOrBlank()) {
-            val action = DetailViewFragmentDirections.actionDetailViewFragmentToProfileViewFragment(userUid)
+    private val onProfileClicked = { userUid: String?, userId: String? ->
+        if (!(userUid.isNullOrBlank() || userId.isNullOrBlank())) {
+            val action = DetailViewFragmentDirections.actionDetailViewFragmentToProfileViewFragment(userUid, userId)
             findNavController().navigate(action)
         }
     }
@@ -116,11 +116,12 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
     private val TAG = DetailListAdapter::class.simpleName
 
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
-    var profileClickEvent: ((String?) -> Unit)? = null
+    var profileClickEvent: ((String?, String?) -> Unit)? = null
 
     inner class DetailViewHolder(private val binding: ItemDetailViewBinding) : ViewHolder(binding.root) {
         private var contentUid: String? = null
         private var userUid: String? = null
+        private var userId: String? = null
 
         init {
             // onClick 설정하기
@@ -131,7 +132,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
                 }
 
                 ivProfile.setOnClickListener {
-                    profileClickEvent?.invoke(userUid)
+                    profileClickEvent?.invoke(userUid, userId)
                 }
             }
         }
@@ -139,6 +140,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
         internal fun bind(item: ContentDto) {
             contentUid = item.contentUid
             userUid = item.uid
+            userId = item.userId
 
             binding.apply {
                 tvUserName.text = item.userId ?: "null"

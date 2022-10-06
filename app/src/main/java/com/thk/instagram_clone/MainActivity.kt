@@ -46,7 +46,13 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setupWithNavController(controller, appBarConfig)
     }
 
-    private val listener = NavController.OnDestinationChangedListener {controller, destination, arguments ->
-        // TODO: 로고를 없애고 subtitle을 보여주기
+    private val listener = NavController.OnDestinationChangedListener {_, destination, _ ->
+        if (destination.id == R.id.profileViewFragment) {
+            supportActionBar?.setLogo(null)
+            supportActionBar?.title = ""
+            supportActionBar?.subtitle = ""
+        } else {
+            supportActionBar?.setLogo(R.drawable.logo_title)
+        }
     }
 }
