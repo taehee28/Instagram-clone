@@ -7,7 +7,7 @@
         android:title="@string/home"/>
 
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/gridFragment"
         android:icon="@drawable/ic_search"
         android:enabled="true"
         android:title="@string/search"/>

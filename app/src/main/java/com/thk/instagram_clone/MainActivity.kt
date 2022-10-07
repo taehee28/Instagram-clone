@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val appBarConfig = AppBarConfiguration(setOf(R.id.detailViewFragment, R.id.alarmFragment, R.id.accountFragment))
+        val appBarConfig = AppBarConfiguration(setOf(R.id.detailViewFragment, R.id.alarmFragment, R.id.accountFragment, R.id.gridFragment))
         binding.toolbar.setupWithNavController(controller, appBarConfig)
     }
 

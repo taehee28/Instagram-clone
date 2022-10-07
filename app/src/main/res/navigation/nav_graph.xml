@@ -43,5 +43,9 @@
             app:argType="string"
             android:defaultValue=""/>
     </fragment>
+    <fragment
+        android:id="@+id/gridFragment"
+        android:name="com.thk.instagram_clone.navigation.GridFragment"
+        android:label="GridFragment" />
 
 </navigation>
