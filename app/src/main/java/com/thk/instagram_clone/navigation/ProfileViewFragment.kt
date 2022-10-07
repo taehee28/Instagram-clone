@@ -16,6 +16,7 @@ import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
+import com.thk.instagram_clone.util.GlideApp
 import kotlin.properties.Delegates
 
 class ProfileViewFragment : Fragment() {
@@ -27,6 +28,7 @@ class ProfileViewFragment : Fragment() {
     private val uid: String? by lazy { args.uid.ifBlank { Firebase.auth.currentUser?.uid } }
     private val userId: String? by lazy { args.userId.ifBlank { Firebase.auth.currentUser?.email } }
 
+    private var profileImageLis: ListenerRegistration? = null
     private var postListLis: ListenerRegistration? = null
     private var followListLis: ListenerRegistration? = null
 
@@ -67,12 +69,14 @@ class ProfileViewFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.subtitle = userId
         setupProfileButton()
 
+        getProfileImageFromFirestore()
         getFollowDataFromFirestore()
         getPostListFromFirestore()
     }
 
     override fun onDestroyView() {
         _binding = null
+        profileImageLis?.remove()
         followListLis?.remove()
         postListLis?.remove()
         super.onDestroyView()
@@ -117,6 +121,25 @@ class ProfileViewFragment : Fragment() {
                 )
             }
         }
+    }
+
+    private fun getProfileImageFromFirestore() = kotlin.runCatching {
+        profileImageLis = Firebase.firestore
+            .collection("profileImages")
+            .document(uid!!)
+            .addSnapshotListener { value, error ->
+                kotlin.runCatching {
+                    value?.data?.get("image") ?: throw IllegalArgumentException("Failed to get profile image(null returned)")
+                }.onSuccess {
+                    GlideApp.with(binding.ivProfile)
+                        .load(it)
+                        .circleCrop()
+                        .into(binding.ivProfile)
+                }.onFailure {
+                    it.printStackTrace()
+                    error?.printStackTrace()
+                }
+            }
     }
 
     private fun getFollowDataFromFirestore() = kotlin.runCatching {

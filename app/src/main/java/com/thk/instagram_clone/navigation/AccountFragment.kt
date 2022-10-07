@@ -109,7 +109,6 @@ class AccountFragment : Fragment() {
                     value?.toObject(FollowDto::class.java)
                         ?: throw IllegalArgumentException("Failed to get follow list(null returned)")
                 }.onSuccess {
-                    Log.d(TAG, "getFollowDataFromFirestore: listener!!!!!")
                     binding.apply {
                         tvFollowingCount.text = it.followingCount.toString()
                         tvFollowerCount.text = it.followerCount.toString()
