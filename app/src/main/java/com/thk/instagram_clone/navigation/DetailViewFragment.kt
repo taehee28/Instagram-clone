@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -37,6 +36,7 @@ class DetailViewFragment : Fragment() {
         binding.rvDetailList.adapter = listAdapter.apply {
             likeClickEvent = onLikeClicked
             profileClickEvent = onProfileClicked
+            commentClickEvent = onCommentClicked
         }
 
         getItemListFromFirestore()
@@ -107,6 +107,13 @@ class DetailViewFragment : Fragment() {
             findNavController().navigate(action)
         }
     }
+
+    private val onCommentClicked = { contentUid: String? ->
+        if (!contentUid.isNullOrBlank()) {
+            val action = DetailViewFragmentDirections.actionDetailViewFragmentToCommentActivity(contentUid)
+            findNavController().navigate(action)
+        }
+    }
 }
 
 /**
@@ -117,6 +124,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
 
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
     var profileClickEvent: ((String?, String?) -> Unit)? = null
+    var commentClickEvent: ((String?) -> Unit)? = null
 
     inner class DetailViewHolder(private val binding: ItemDetailViewBinding) : ViewHolder(binding.root) {
         private var contentUid: String? = null
@@ -133,6 +141,10 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
 
                 ivProfile.setOnClickListener {
                     profileClickEvent?.invoke(userUid, userId)
+                }
+
+                btnComment.setOnClickListener {
+                    commentClickEvent?.invoke(contentUid)
                 }
             }
         }

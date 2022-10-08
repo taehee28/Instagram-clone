@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_detailViewFragment_to_profileViewFragment"
             app:destination="@id/profileViewFragment" />
+        <action
+            android:id="@+id/action_detailViewFragment_to_commentActivity"
+            app:destination="@id/commentActivity" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
@@ -47,5 +50,15 @@
         android:id="@+id/gridFragment"
         android:name="com.thk.instagram_clone.navigation.GridFragment"
         android:label="GridFragment" />
+    <activity
+        android:id="@+id/commentActivity"
+        android:name="com.thk.instagram_clone.CommentActivity"
+        android:label="activity_comment"
+        tools:layout="@layout/activity_comment">
+        <argument
+            android:name="contentUid"
+            app:argType="string"
+            android:defaultValue=""/>
+    </activity>
 
 </navigation>
