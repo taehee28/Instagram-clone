@@ -59,6 +59,10 @@
             android:name="contentUid"
             app:argType="string"
             android:defaultValue=""/>
+        <argument
+            android:name="destinationUid"
+            app:argType="string"
+            android:defaultValue=""/>
     </activity>
 
 </navigation>

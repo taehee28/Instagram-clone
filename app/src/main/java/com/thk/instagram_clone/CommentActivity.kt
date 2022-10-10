@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.databinding.ActivityCommentBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
+import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
@@ -20,6 +21,7 @@ class CommentActivity : AppCompatActivity() {
 
     private val args: CommentActivityArgs by navArgs()
     private val contentUid: String by lazy { args.contentUid }
+    private val destinationUid: String by lazy { args.destinationUid }
 
     private val listAdapter = CommentListAdapter()
 
@@ -28,17 +30,22 @@ class CommentActivity : AppCompatActivity() {
         binding = ActivityCommentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnSend.setOnClickListener { sendComment() }
+        binding.btnSend.setOnClickListener {
+            val text = binding.etContent.text.toString()
+            binding.etContent.setText("")
+            sendComment(text)
+            registerCommentAlarm(destinationUid, text)
+        }
         binding.rvCommentList.adapter = listAdapter
 
         getCommentsFromFirestore()
     }
 
-    private fun sendComment() {
+    private fun sendComment(text: String) {
         val comment = ContentDto.Comment (
             userId = Firebase.auth.currentUser?.email ?: "",
             uid = Firebase.auth.currentUser?.uid ?: "",
-            text = binding.etContent.text.toString(),
+            text = text,
             timestamp = System.currentTimeMillis()
         )
 
@@ -48,8 +55,24 @@ class CommentActivity : AppCompatActivity() {
             .collection("comments")
             .document()
             .set(comment)
+    }
 
-        binding.etContent.setText("")
+    private fun registerCommentAlarm(destinationUid: String?, message: String) {
+        if (!destinationUid.isNullOrBlank()) {
+            val alarmDto = AlarmDto(
+                destinationUid = destinationUid,
+                userId = Firebase.auth.currentUser?.email ?: "",
+                uid = Firebase.auth.currentUser?.uid ?: "",
+                message = message,
+                kind = 1,
+                timestamp = System.currentTimeMillis()
+            )
+
+            Firebase.firestore
+                .collection("alarms")
+                .document()
+                .set(alarmDto)
+        }
     }
 
     private fun getCommentsFromFirestore() {

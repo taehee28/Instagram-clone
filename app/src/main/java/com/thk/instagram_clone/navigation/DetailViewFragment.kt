@@ -13,6 +13,7 @@ import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
+import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 
 class DetailViewFragment : Fragment() {
@@ -35,6 +36,7 @@ class DetailViewFragment : Fragment() {
 
         binding.rvDetailList.adapter = listAdapter.apply {
             likeClickEvent = onLikeClicked
+            likeAlarmEvent = registerLikeAlarm
             profileClickEvent = onProfileClicked
             commentClickEvent = onCommentClicked
         }
@@ -108,10 +110,27 @@ class DetailViewFragment : Fragment() {
         }
     }
 
-    private val onCommentClicked = { contentUid: String? ->
-        if (!contentUid.isNullOrBlank()) {
-            val action = DetailViewFragmentDirections.actionDetailViewFragmentToCommentActivity(contentUid)
+    private val onCommentClicked = { contentUid: String?, userUid: String? ->
+        if (!(contentUid.isNullOrBlank() || userUid.isNullOrBlank())) {
+            val action = DetailViewFragmentDirections.actionDetailViewFragmentToCommentActivity(contentUid, userUid)
             findNavController().navigate(action)
+        }
+    }
+
+    private val registerLikeAlarm = { destinationUid: String? ->
+        if (!destinationUid.isNullOrBlank()) {
+            val alarmDto = AlarmDto(
+                destinationUid = destinationUid,
+                userId = Firebase.auth.currentUser?.email ?: "",
+                uid = Firebase.auth.currentUser?.uid ?: "",
+                kind = 0,
+                timestamp = System.currentTimeMillis()
+            )
+
+            Firebase.firestore
+                .collection("alarms")
+                .document()
+                .set(alarmDto)
         }
     }
 }
@@ -123,8 +142,9 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
     private val TAG = DetailListAdapter::class.simpleName
 
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
+    var likeAlarmEvent: ((String?) -> Unit)? = null
     var profileClickEvent: ((String?, String?) -> Unit)? = null
-    var commentClickEvent: ((String?) -> Unit)? = null
+    var commentClickEvent: ((String?, String?) -> Unit)? = null
 
     inner class DetailViewHolder(private val binding: ItemDetailViewBinding) : ViewHolder(binding.root) {
         private var contentUid: String? = null
@@ -137,6 +157,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
                 btnLike.setOnClickListener { view ->
                     view.isSelected = !view.isSelected
                     likeClickEvent?.invoke(contentUid, view.isSelected)
+                    if (view.isSelected) likeAlarmEvent?.invoke(userUid)
                 }
 
                 ivProfile.setOnClickListener {
@@ -144,7 +165,7 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
                 }
 
                 btnComment.setOnClickListener {
-                    commentClickEvent?.invoke(contentUid)
+                    commentClickEvent?.invoke(contentUid, userUid)
                 }
             }
         }

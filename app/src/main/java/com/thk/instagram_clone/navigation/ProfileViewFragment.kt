@@ -14,6 +14,7 @@ import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
+import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
@@ -119,8 +120,25 @@ class ProfileViewFragment : Fragment() {
                     tsDocOthersFollower,
                     followDto.copy(followerCount = followDto.followerCount + 1).apply { followers[Firebase.auth.currentUser?.uid!!] = true }
                 )
+
+                registerFollowAlarm()
             }
         }
+    }
+
+    private fun registerFollowAlarm() = uid?.let {
+        val alarmDto = AlarmDto(
+            destinationUid = it,
+            userId = Firebase.auth.currentUser?.email ?: "",
+            uid = Firebase.auth.currentUser?.uid ?: "",
+            kind = 2,
+            timestamp = System.currentTimeMillis()
+        )
+
+        Firebase.firestore
+            .collection("alarms")
+            .document()
+            .set(alarmDto)
     }
 
     private fun getProfileImageFromFirestore() = kotlin.runCatching {
