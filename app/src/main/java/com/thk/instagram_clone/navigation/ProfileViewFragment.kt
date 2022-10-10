@@ -14,6 +14,7 @@ import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
+import com.thk.instagram_clone.model.ALARM_FOLLOW
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
@@ -131,7 +132,7 @@ class ProfileViewFragment : Fragment() {
             destinationUid = it,
             userId = Firebase.auth.currentUser?.email ?: "",
             uid = Firebase.auth.currentUser?.uid ?: "",
-            kind = 2,
+            kind = ALARM_FOLLOW,
             timestamp = System.currentTimeMillis()
         )
 

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.databinding.ActivityCommentBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
+import com.thk.instagram_clone.model.ALARM_COMMENT
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.util.Firebase
@@ -64,7 +65,7 @@ class CommentActivity : AppCompatActivity() {
                 userId = Firebase.auth.currentUser?.email ?: "",
                 uid = Firebase.auth.currentUser?.uid ?: "",
                 message = message,
-                kind = 1,
+                kind = ALARM_COMMENT,
                 timestamp = System.currentTimeMillis()
             )
 

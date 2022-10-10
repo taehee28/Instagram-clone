@@ -13,6 +13,7 @@ import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
+import com.thk.instagram_clone.model.ALARM_LIKE
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 
@@ -123,7 +124,7 @@ class DetailViewFragment : Fragment() {
                 destinationUid = destinationUid,
                 userId = Firebase.auth.currentUser?.email ?: "",
                 uid = Firebase.auth.currentUser?.uid ?: "",
-                kind = 0,
+                kind = ALARM_LIKE,
                 timestamp = System.currentTimeMillis()
             )
 
