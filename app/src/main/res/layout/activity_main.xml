@@ -45,6 +45,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:menu="@menu/menu_main_bottom_navigation"
+            app:labelVisibilityMode="unlabeled"
+            app:itemIconTint="@drawable/selector_btn_bottomnav"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

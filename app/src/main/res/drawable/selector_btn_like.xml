@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true" android:drawable="@drawable/ic_favorite"/>
+    <item android:state_selected="true">
+        <bitmap android:src="@drawable/ic_favorite" android:tint="#C72A2A"/>
+    </item>
     <item android:state_selected="false" android:drawable="@drawable/ic_favorite_border"/>
 </selector>
