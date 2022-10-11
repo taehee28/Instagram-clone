@@ -14,6 +14,7 @@ import com.thk.instagram_clone.databinding.ItemCommentBinding
 import com.thk.instagram_clone.model.ALARM_COMMENT
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
+import com.thk.instagram_clone.util.FcmPush
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 
@@ -73,6 +74,9 @@ class CommentActivity : AppCompatActivity() {
                 .collection("alarms")
                 .document()
                 .set(alarmDto)
+
+            val msg = "${Firebase.auth.currentUser?.email} ${getString(R.string.alarm_comment)} of $message"
+            FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
         }
     }
 

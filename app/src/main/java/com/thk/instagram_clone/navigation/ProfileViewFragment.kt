@@ -18,6 +18,7 @@ import com.thk.instagram_clone.model.ALARM_FOLLOW
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
+import com.thk.instagram_clone.util.FcmPush
 import com.thk.instagram_clone.util.GlideApp
 import kotlin.properties.Delegates
 
@@ -140,6 +141,9 @@ class ProfileViewFragment : Fragment() {
             .collection("alarms")
             .document()
             .set(alarmDto)
+
+        val msg = "${Firebase.auth.currentUser?.email} ${getString(R.string.alarm_follow)}"
+        FcmPush.sendMessage(it, "Instagram-clone", msg)
     }
 
     private fun getProfileImageFromFirestore() = kotlin.runCatching {

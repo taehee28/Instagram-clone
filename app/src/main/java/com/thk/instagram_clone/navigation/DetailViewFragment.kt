@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
@@ -16,6 +17,7 @@ import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.instagram_clone.model.ALARM_LIKE
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
+import com.thk.instagram_clone.util.FcmPush
 
 class DetailViewFragment : Fragment() {
     private val TAG = DetailViewFragment::class.simpleName
@@ -132,6 +134,9 @@ class DetailViewFragment : Fragment() {
                 .collection("alarms")
                 .document()
                 .set(alarmDto)
+
+            val msg = "${Firebase.auth.currentUser?.email} ${getString(R.string.alarm_favorite)}"
+            FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
         }
     }
 }
