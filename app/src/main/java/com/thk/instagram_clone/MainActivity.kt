@@ -8,7 +8,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import com.thk.instagram_clone.databinding.ActivityMainBinding
+import com.thk.instagram_clone.util.Firebase
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -18,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        registerPushToken()
 
         setSupportActionBar(binding.toolbar)
 
@@ -35,6 +39,20 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         controller.removeOnDestinationChangedListener(listener)
         super.onPause()
+    }
+
+    private fun registerPushToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result ?: ""
+                val uid = Firebase.auth.currentUser?.uid ?: return@addOnCompleteListener
+
+                Firebase.firestore
+                    .collection("pushtokens")
+                    .document(uid)
+                    .set(mapOf("pushToken" to token))
+            }
+        }
     }
 
     private fun setBottomNav() {
