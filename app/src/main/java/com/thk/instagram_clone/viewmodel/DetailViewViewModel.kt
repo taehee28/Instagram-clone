@@ -89,7 +89,7 @@ class DetailViewViewModel : ViewModel() {
             .document()
             .set(alarmDto)
 
-        // 푸시 알람 전송 
+        // 푸시 알람 전송
         val msg = format(SystemString.ALARM_FAVORITE, Firebase.auth.currentUser?.email ?: "")
         FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
     }

@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -18,12 +21,17 @@ import com.thk.instagram_clone.model.ALARM_LIKE
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
+import com.thk.instagram_clone.viewmodel.AlarmViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 class AlarmFragment : Fragment() {
     private val TAG = AlarmFragment::class.simpleName
     private var _binding: FragmentAlarmBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: AlarmViewModel by viewModels()
     private val listAdapter = AlarmListAdapter()
 
     companion object {
@@ -43,30 +51,19 @@ class AlarmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.rvAlarmList.adapter = listAdapter
 
-        getAlarmsFromFirestore()
+        lifecycleScope.launch {
+            viewModel.alarmsFlow
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
+                .collectLatest {
+                    listAdapter.submitList(it)
+                }
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    private fun getAlarmsFromFirestore() {
-        Firebase.firestore
-            .collection("alarms")
-            .whereEqualTo("destinationUid", Firebase.auth.currentUser?.uid)
-            .addSnapshotListener { value, error ->
-                kotlin.runCatching {
-                    value?.documents?.map {
-                        it.toObject(AlarmDto::class.java)
-                    } ?: throw IllegalArgumentException("null returned")
-                }.onSuccess {
-                    listAdapter.submitList(it)
-                }.onFailure { e ->
-                    e.printStackTrace()
-                    error?.printStackTrace()
-                }
-            }
     }
 }
 
