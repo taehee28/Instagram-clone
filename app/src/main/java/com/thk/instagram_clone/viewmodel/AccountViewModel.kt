@@ -14,54 +14,47 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 class AccountViewModel : ViewModel() {
-    val profileImageUrl = Firebase.firestore
+    private val profileImageUrl = Firebase.firestore
         .collection(PathString.profileImages)
         .document(Firebase.auth.currentUser?.uid ?: "")
         .snapshots()
         .mapLatest { value ->
-            val url = value.data?.get("image") ?: throw IllegalArgumentException("null returned")
-            AccountData.ProfileImageData(url)
-        }.catch {
-            it.printStackTrace()
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AccountData.ProfileImageData(Any())
-        )
+            value.data?.get("image").toString()
+        }
 
-    val followData = Firebase.firestore
+    private val followData = Firebase.firestore
         .collection(PathString.users)
         .document(Firebase.auth.currentUser?.uid ?: "")
         .snapshots()
         .mapLatest { value ->
-            val data = value.toObject(FollowDto::class.java) ?: throw IllegalArgumentException("null returned")
-            AccountData.FollowData(data)
-        }.catch {
-            it.printStackTrace()
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AccountData.FollowData(FollowDto())
-        )
+            value.toObject(FollowDto::class.java) ?: throw IllegalArgumentException("null returned")
+        }
 
-    val postList = Firebase.firestore
+    private val postList = Firebase.firestore
         .collection(PathString.images)
         .whereEqualTo("uid", Firebase.auth.currentUser?.uid ?: "")
         .snapshots()
         .mapLatest { value ->
-            val list = value.documents.map {
+            value.documents.map {
                 it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
                     ?: throw IllegalArgumentException("null returned")
             }
+        }
 
-            AccountData.PostsData(list)
-        }.catch {
-            it.printStackTrace()
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AccountData.PostsData(emptyList())
-        )
+    /**
+     * 프로필 이미지, 팔로우 정보, 올린 글 리스트 Flow들을 하나로 합친 StateFlow
+     */
+    val accountDataFlow = merge(
+        profileImageUrl,
+        followData,
+        postList
+    ).catch {
+        it.printStackTrace()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = Unit
+    )
 
     fun uploadProfileImage(imageUri: Uri?) = imageUri?.also { Firebase.auth.currentUser?.uid?.also { uid ->
         Firebase.storage.reference.child(PathString.userProfileImages).child(uid).also { ref ->
@@ -74,10 +67,4 @@ class AccountViewModel : ViewModel() {
         }
     } }
 
-}
-
-sealed class AccountData {
-    data class ProfileImageData(val url: Any): AccountData()
-    data class FollowData(val data: FollowDto): AccountData()
-    data class PostsData(val list: List<ContentDto>): AccountData()
 }

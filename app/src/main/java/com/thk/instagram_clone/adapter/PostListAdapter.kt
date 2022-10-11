@@ -11,10 +11,6 @@ import com.thk.instagram_clone.util.GlideApp
 
 class PostListAdapter : ListAdapter<ContentDto, PostListAdapter.PostViewHolder>(PostDiffUtil()) {
     inner class PostViewHolder(private val view: ImageView) : RecyclerView.ViewHolder(view) {
-        init {
-            // TODO: setOnClick
-        }
-
         internal fun bind(item: ContentDto) {
             GlideApp.with(view)
                 .load(item.imageUrl)
