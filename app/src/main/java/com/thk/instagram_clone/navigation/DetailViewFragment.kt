@@ -5,10 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.firebase.firestore.ktx.snapshots
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
@@ -18,12 +23,17 @@ import com.thk.instagram_clone.model.ALARM_LIKE
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.util.FcmPush
+import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 class DetailViewFragment : Fragment() {
     private val TAG = DetailViewFragment::class.simpleName
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: DetailViewViewModel by viewModels()
     private val listAdapter = DetailListAdapter().apply { setHasStableIds(true) }
 
     companion object {
@@ -38,72 +48,31 @@ class DetailViewFragment : Fragment() {
         _binding = FragmentDetailViewBinding.inflate(inflater, container, false)
 
         binding.rvDetailList.adapter = listAdapter.apply {
-            likeClickEvent = onLikeClicked
-            likeAlarmEvent = registerLikeAlarm
+            likeClickEvent = viewModel::onLikeClicked
+            likeAlarmEvent = viewModel::registerLikeAlarm
             profileClickEvent = onProfileClicked
             commentClickEvent = onCommentClicked
         }
 
-        getItemListFromFirestore()
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            viewModel.itemsFlow
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
+                .collectLatest {
+                    listAdapter.submitList(it)
+                }
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    /**
-     * Firestore로부터 post 목록을 가져와 list dapter에 전달 
-     */
-    private fun getItemListFromFirestore() {
-        Firebase.firestore
-            .collection("images")
-            .orderBy("timestamp")
-            .addSnapshotListener { value, error ->
-                kotlin.runCatching {
-                    value?.documents?.map {
-                        it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
-                    } ?: throw IllegalArgumentException("Failed to get list(null returned)")
-                }.onSuccess { list ->
-                    listAdapter.submitList(list)
-                }.onFailure { e ->
-                    e.printStackTrace()
-                    error?.printStackTrace()
-                }
-            }
-    }
-
-    private val onLikeClicked = { countentUid: String?, isSelected: Boolean ->
-        if (!countentUid.isNullOrBlank()) {
-            // uid로 저장된 doc(업로드한 글) 찾아와서
-            // doc을 ContentDto로 변경하고
-            // ContentDto를 수정해서
-            // 수정된 Dto를 바탕으로 doc이 수정될 수 있게
-            // transaction으로 set 해줌
-
-            val tsDoc = Firebase.firestore.collection("images").document(countentUid)
-
-            Firebase.firestore.runTransaction { transaction ->
-                val item = transaction.get(tsDoc).toObject(ContentDto::class.java) ?: return@runTransaction
-
-                val isContains = Firebase.auth.currentUser?.uid?.let {
-                    if (isSelected) item.likedUsers.put(it, true) else item.likedUsers.remove(it)
-                    item.likedUsers.contains(it)
-                }
-
-                // null이라는 것은 로그인된 유저의 uid가 없다는것 == 비정상
-                isContains ?: return@runTransaction
-
-                transaction.set(
-                    tsDoc,
-                    item.copy(
-                        likeCount = item.likeCount + if (isContains) 1 else -1
-                    )
-                )
-            }
-        }
     }
 
     private val onProfileClicked = { userUid: String?, userId: String? ->
@@ -117,26 +86,6 @@ class DetailViewFragment : Fragment() {
         if (!(contentUid.isNullOrBlank() || userUid.isNullOrBlank())) {
             val action = DetailViewFragmentDirections.actionDetailViewFragmentToCommentActivity(contentUid, userUid)
             findNavController().navigate(action)
-        }
-    }
-
-    private val registerLikeAlarm = { destinationUid: String? ->
-        if (!destinationUid.isNullOrBlank()) {
-            val alarmDto = AlarmDto(
-                destinationUid = destinationUid,
-                userId = Firebase.auth.currentUser?.email ?: "",
-                uid = Firebase.auth.currentUser?.uid ?: "",
-                kind = ALARM_LIKE,
-                timestamp = System.currentTimeMillis()
-            )
-
-            Firebase.firestore
-                .collection("alarms")
-                .document()
-                .set(alarmDto)
-
-            val msg = "${Firebase.auth.currentUser?.email} ${getString(R.string.alarm_favorite)}"
-            FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
         }
     }
 }
