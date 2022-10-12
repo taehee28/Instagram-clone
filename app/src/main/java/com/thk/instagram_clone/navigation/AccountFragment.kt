@@ -2,6 +2,7 @@ package com.thk.instagram_clone.navigation
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
@@ -19,6 +21,7 @@ import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.viewmodel.AccountViewModel
+import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -27,9 +30,7 @@ class AccountFragment : Fragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
-    private val uid: String? get() = Firebase.auth.currentUser?.uid
-
-    private val viewModel: AccountViewModel by viewModels()
+    private val viewModel: AccountViewModel by viewModels { AccountViewModelFactory(Firebase.auth.currentUser?.uid) }
     private val listAdapter = PostListAdapter()
 
     private val albumLauncher = registerForActivityResult(
@@ -76,6 +77,7 @@ class AccountFragment : Fragment() {
                             GlideApp.with(binding.ivProfile)
                                 .load(it)
                                 .circleCrop()
+                                .error(R.drawable.ic_account)
                                 .into(binding.ivProfile)
                         }
                         is FollowDto -> {
