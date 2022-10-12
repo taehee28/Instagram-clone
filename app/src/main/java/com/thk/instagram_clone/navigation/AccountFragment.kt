@@ -20,6 +20,7 @@ import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
+import com.thk.instagram_clone.util.LoadingDialog
 import com.thk.instagram_clone.viewmodel.AccountViewModel
 import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
 import kotlinx.coroutines.flow.*
@@ -38,7 +39,10 @@ class AccountFragment : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // 사진을 선택했을 때
-            viewModel.uploadProfileImage(result.data?.data)
+            LoadingDialog.show(requireContext())
+            viewModel.uploadProfileImage(result.data?.data) {
+                LoadingDialog.hide()
+            }
         }
     }
 

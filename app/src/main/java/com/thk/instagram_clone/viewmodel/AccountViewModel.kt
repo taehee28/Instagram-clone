@@ -67,13 +67,15 @@ class AccountViewModel(private val uid: String?) : ViewModel() {
      * 프로필 사진 업로드.
      * AccountFragment에서만 사용
      */
-    fun uploadProfileImage(imageUri: Uri?) = imageUri?.also { Firebase.auth.currentUser?.uid?.also { uid ->
+    fun uploadProfileImage(imageUri: Uri?, callback: (() -> Unit)? = null) = imageUri?.also { Firebase.auth.currentUser?.uid?.also { uid ->
         Firebase.storage.reference.child(PathString.userProfileImages).child(uid).also { ref ->
             ref.putFile(imageUri)
                 .continueWithTask { ref.downloadUrl }
                 .addOnSuccessListener { uri ->
                     val map = mapOf("image" to uri.toString())
                     Firebase.firestore.collection(PathString.profileImages).document(uid).set(map)
+
+                    callback?.invoke()
                 }
         }
     } }

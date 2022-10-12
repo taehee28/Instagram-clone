@@ -18,6 +18,7 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.thk.instagram_clone.databinding.ActivityLoginBinding
+import com.thk.instagram_clone.util.LoadingDialog
 import com.thk.instagram_clone.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -67,10 +68,13 @@ class LoginActivity : AppCompatActivity() {
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collectLatest {
+                    if (LoadingDialog.isShowing) LoadingDialog.hide()
+
                     when (it) {
                         com.thk.instagram_clone.viewmodel.LoginResult.Init -> {}
                         com.thk.instagram_clone.viewmodel.LoginResult.Loading -> {
                             /* todo: show indicator */
+                            LoadingDialog.show(this@LoginActivity)
                         }
                         com.thk.instagram_clone.viewmodel.LoginResult.Success -> {
                             moveToMainPage()
