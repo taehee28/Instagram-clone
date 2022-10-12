@@ -23,6 +23,7 @@ import com.thk.instagram_clone.model.ALARM_LIKE
 import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.util.FcmPush
+import com.thk.instagram_clone.util.PathString
 import com.thk.instagram_clone.viewmodel.DetailViewViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -133,10 +134,19 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
             binding.apply {
                 tvUserName.text = item.userId ?: "null"
 
-                // TODO: 추후 진짜 프로필 사진 받아오는 것으로 변경 예정
-                GlideApp.with(ivProfile)
-                    .load(item.imageUrl)
-                    .into(ivProfile)
+                Firebase.firestore
+                    .collection(PathString.profileImages)
+                    .document(item.uid ?: "")
+                    .get()
+                    .addOnCompleteListener { task ->
+                        val url = task.result.data?.get("image")
+
+                        GlideApp.with(ivProfile)
+                            .load(url)
+                            .circleCrop()
+                            .error(R.drawable.ic_account)
+                            .into(ivProfile)
+                    }
 
                 GlideApp.with(ivPhoto)
                     .load(item.imageUrl)
