@@ -5,19 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.ListenerRegistration
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.databinding.FragmentGridBinding
 import com.thk.instagram_clone.model.ContentDto
 import com.thk.instagram_clone.util.Firebase
+import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 class GridFragment : Fragment() {
     private val TAG = GridFragment::class.simpleName
     private var _binding: FragmentGridBinding? = null
     private val binding get() = _binding!!
 
-    private var postListLis: ListenerRegistration? = null
-
+    private val viewModel: DetailViewViewModel by viewModels()
     private val listAdapter = PostListAdapter()
 
     companion object {
@@ -37,29 +44,18 @@ class GridFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.rvPostList.adapter = listAdapter
 
-        getPostListFromFirestore()
+        lifecycleScope.launch {
+            viewModel.itemsFlow
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
+                .collectLatest {
+                    listAdapter.submitList(it)
+                }
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
-        postListLis?.remove()
         super.onDestroyView()
-    }
-
-    private fun getPostListFromFirestore() {
-        postListLis = Firebase.firestore
-            .collection("images")
-            .addSnapshotListener { value, error ->
-                kotlin.runCatching {
-                    value?.documents?.map {
-                        it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
-                    } ?: throw IllegalArgumentException("Failed to get list(null returned)")
-                }.onSuccess { list ->
-                    listAdapter.submitList(list)
-                }.onFailure { e ->
-                    e.printStackTrace()
-                    error?.printStackTrace()
-                }
-            }
     }
 }
