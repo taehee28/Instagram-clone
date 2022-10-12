@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.thk.instagram_clone.LoginActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.util.Firebase
@@ -64,7 +65,13 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnProfile.setOnClickListener { Firebase.auth.signOut() }
+        binding.btnProfile.setOnClickListener {
+            activity?.run {
+                Firebase.auth.signOut()
+                startActivity(Intent(activity, LoginActivity::class.java))
+                finish()
+            }
+        }
         binding.ivProfile.setOnClickListener {
             val imagePickerIntent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
             albumLauncher.launch(imagePickerIntent)
