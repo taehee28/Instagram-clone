@@ -5,25 +5,32 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.thk.instagram_clone.databinding.ActivityAddPhotoBinding
 import com.thk.instagram_clone.model.ContentDto
 import java.text.SimpleDateFormat
 import java.util.*
 import com.thk.instagram_clone.util.Firebase
+import com.thk.instagram_clone.util.LoadingDialog
+import com.thk.instagram_clone.viewmodel.AddPhotoViewModel
+import kotlinx.coroutines.launch
 
 class AddPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPhotoBinding
 
-    private var photoUri: Uri? = null
+    private val viewModel: AddPhotoViewModel by viewModels()
 
     private val albumLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // 사진을 선택했을 때
-            photoUri = result.data?.data
+            val photoUri = result.data?.data
+            viewModel.setUri(photoUri)
             binding.ivPhoto.setImageURI(photoUri)
         } else {
             // 선택하지 않고 취소했을 때
@@ -42,38 +49,22 @@ class AddPhotoActivity : AppCompatActivity() {
         albumLauncher.launch(imagePickerIntent)
     }
 
-    /**
-     * Firebase에 사진 업로드
-     */
-    private fun uploadContent() = photoUri?.also {
-        val fileName = createFileName()
-        val storageRef = Firebase.storage.reference.child("images").child(fileName)
+    private fun uploadContent() = lifecycleScope.launch {
+        LoadingDialog.show(this@AddPhotoActivity)
 
-        storageRef
-            .putFile(it)
-            .continueWithTask { storageRef.downloadUrl }
-            .addOnSuccessListener { uri ->
-                val contentDto = ContentDto(
-                    imageUrl = uri.toString(),
-                    uid = Firebase.auth.currentUser?.uid,
-                    userId = Firebase.auth.currentUser?.email,
-                    description = binding.etDescription.text.toString(),
-                    timestamp = System.currentTimeMillis()
-                )
-
-                // 포스트 자체를 저장
-                Firebase.firestore.collection("images").document().set(contentDto)
-
-                setResult(Activity.RESULT_OK)
-                finish()
+        val text = binding.etDescription.text?.toString() ?: ""
+        viewModel.uploadContent(text)
+            .fold(
+                onSuccess = {
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                },
+                onFailure = {
+                    it.printStackTrace()
+                    Toast.makeText(this@AddPhotoActivity, it.message, Toast.LENGTH_SHORT).show()
+                }
+            ).also {
+                LoadingDialog.dismiss()
             }
-    } ?: Toast.makeText(this, getString(R.string.no_selected_image_path), Toast.LENGTH_SHORT).show()
-
-    /**
-     * 업로드 할 사진 파일의 이름 생성 
-     */
-    private fun createFileName() = run {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        "Image_${timestamp}_.png"
     }
 }
