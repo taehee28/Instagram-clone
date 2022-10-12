@@ -6,6 +6,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.thk.instagram_clone.R
 
+/**
+ * 전역적으로 사용하기 위한 Loading Dialog.
+ * 사용 시 추가된 화면의 context를 가지기 때문에 dismiss할 때 null처리를 해줌.
+ */
 object LoadingDialog {
     private var dialog: Dialog? = null
 
@@ -24,8 +28,8 @@ object LoadingDialog {
         dialog?.show()
     }
 
-    fun hide() {
-        dialog?.hide()
-        if (dialog != null) dialog = null
+    fun dismiss() {
+        dialog?.dismiss()
+        dialog = null
     }
 }

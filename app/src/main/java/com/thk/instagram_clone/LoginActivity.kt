@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collectLatest {
-                    if (LoadingDialog.isShowing) LoadingDialog.hide()
+                    if (LoadingDialog.isShowing) LoadingDialog.dismiss()
 
                     when (it) {
                         com.thk.instagram_clone.viewmodel.LoginResult.Init -> {}

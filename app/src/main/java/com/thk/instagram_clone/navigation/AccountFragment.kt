@@ -2,7 +2,6 @@ package com.thk.instagram_clone.navigation
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -41,7 +40,7 @@ class AccountFragment : Fragment() {
             // 사진을 선택했을 때
             LoadingDialog.show(requireContext())
             viewModel.uploadProfileImage(result.data?.data) {
-                LoadingDialog.hide()
+                LoadingDialog.dismiss()
             }
         }
     }
