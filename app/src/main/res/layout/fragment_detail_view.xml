@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".navigation.DetailViewFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <com.google.android.material.appbar.AppBarLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content">-->
+    <data>
+        <variable
+            name="adapter"
+            type="com.thk.instagram_clone.navigation.DetailListAdapter" />
 
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="35dp"-->
-<!--            app:contentInsetStart="0dp"-->
-<!--            android:paddingVertical="4dp"-->
-<!--            app:logo="@drawable/logo_title" />-->
+        <variable
+            name="viewModel"
+            type="com.thk.instagram_clone.viewmodel.DetailViewViewModel" />
+    </data>
 
-<!--    </com.google.android.material.appbar.AppBarLayout>-->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_detailList"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="vertical"
-        tools:listitem="@layout/item_detail_view"/>
+        tools:context=".navigation.DetailViewFragment">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_detailList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:adapter="@{adapter}"
+            app:submitList="@{viewModel.itemsFlow}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            tools:listitem="@layout/item_detail_view"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

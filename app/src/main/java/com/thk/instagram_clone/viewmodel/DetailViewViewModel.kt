@@ -2,6 +2,9 @@
 
 package com.thk.instagram_clone.viewmodel
 
+import androidx.databinding.Bindable
+import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.snapshots
@@ -13,10 +16,8 @@ import com.thk.instagram_clone.util.FcmPush
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.SystemString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import okhttp3.internal.format
 
 class DetailViewViewModel : ViewModel() {

@@ -5,32 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.firebase.firestore.ktx.snapshots
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
-import com.thk.instagram_clone.model.ALARM_LIKE
-import com.thk.instagram_clone.model.AlarmDto
 import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.util.FcmPush
 import com.thk.instagram_clone.util.PathString
 import com.thk.instagram_clone.viewmodel.DetailViewViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 class DetailViewFragment : Fragment() {
-    private val TAG = DetailViewFragment::class.simpleName
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!
 
@@ -46,9 +36,9 @@ class DetailViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentDetailViewBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail_view, container, false)
 
-        binding.rvDetailList.adapter = listAdapter.apply {
+        listAdapter.apply {
             likeClickEvent = viewModel::onLikeClicked
             likeAlarmEvent = viewModel::registerLikeAlarm
             profileClickEvent = onProfileClicked
@@ -61,13 +51,11 @@ class DetailViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycleScope.launch {
-            viewModel.itemsFlow
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .collectLatest {
-                    listAdapter.submitList(it)
-                }
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        binding.apply {
+            adapter = listAdapter
+            viewModel = this@DetailViewFragment.viewModel
         }
     }
 
@@ -95,8 +83,6 @@ class DetailViewFragment : Fragment() {
  * RecyclerView Adapter class
  */
 class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHolder>(DetailDiffUtil()) {
-    private val TAG = DetailListAdapter::class.simpleName
-
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
     var likeAlarmEvent: ((String?) -> Unit)? = null
     var profileClickEvent: ((String?, String?) -> Unit)? = null
@@ -131,40 +117,12 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
             userUid = item.uid
             userId = item.userId
 
-            binding.apply {
-                tvUserName.text = item.userId ?: "null"
-
-                Firebase.firestore
-                    .collection(PathString.profileImages)
-                    .document(item.uid ?: "")
-                    .get()
-                    .addOnCompleteListener { task ->
-                        val url = task.result.data?.get("image")
-
-                        GlideApp.with(ivProfile)
-                            .load(url)
-                            .circleCrop()
-                            .error(R.drawable.ic_account)
-                            .into(ivProfile)
-                    }
-
-                GlideApp.with(ivPhoto)
-                    .load(item.imageUrl)
-                    .into(ivPhoto)
-
-                tvDescription.text = item.description
-
-                tvLikeCount.text = item.likeCount.toString()
-
-                Firebase.auth.currentUser?.uid?.also {
-                    btnLike.isSelected = item.likedUsers.contains(it)
-                }
-            }
+            binding.data = item
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder {
-        val binding = ItemDetailViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = DataBindingUtil.inflate<ItemDetailViewBinding>(LayoutInflater.from(parent.context), R.layout.item_detail_view, parent, false)
         return DetailViewHolder(binding)
     }
 

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import com.thk.instagram_clone.R
 
 /**
@@ -33,3 +34,6 @@ object LoadingDialog {
         dialog = null
     }
 }
+
+
+inline fun <reified T> T.logd(message: String) = Log.d(T::class.java.simpleName, message)
