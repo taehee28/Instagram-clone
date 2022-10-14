@@ -15,10 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import com.thk.instagram_clone.LoginActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
-import com.thk.instagram_clone.util.Firebase
+import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.model.FollowDto
+import com.thk.data.model.ContentDto
+import com.thk.data.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.util.LoadingDialog
 import com.thk.instagram_clone.viewmodel.AccountViewModel

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="data"
-            type="com.thk.instagram_clone.model.ContentDto" />
+            type="com.thk.data.model.ContentDto" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.model
+package com.thk.data.model
 
 data class PushDto(
     val to: String = "",

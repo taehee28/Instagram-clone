@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.util
+package com.thk.data.util
 
 object SystemString {
     const val ALARM_FAVORITE = "%s Liked the press"

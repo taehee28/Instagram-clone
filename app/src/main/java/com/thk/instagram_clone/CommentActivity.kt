@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.databinding.ActivityCommentBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
-import com.thk.instagram_clone.model.ALARM_COMMENT
-import com.thk.instagram_clone.model.AlarmDto
-import com.thk.instagram_clone.model.ContentDto
+import com.thk.data.model.ALARM_COMMENT
+import com.thk.data.model.AlarmDto
+import com.thk.data.model.ContentDto
 import com.thk.instagram_clone.util.FcmPush
-import com.thk.instagram_clone.util.Firebase
+import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 
 class CommentActivity : AppCompatActivity() {

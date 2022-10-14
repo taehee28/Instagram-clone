@@ -24,7 +24,4 @@ object LoginModule {
 
         return GoogleSignIn.getClient(context, gso)
     }
-
-    @Provides
-    fun provideFacebookCallbackManager(): CallbackManager = CallbackManager.Factory.create()
 }

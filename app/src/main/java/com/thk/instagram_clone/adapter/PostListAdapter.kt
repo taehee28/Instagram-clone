@@ -6,7 +6,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.thk.instagram_clone.model.ContentDto
+import com.thk.data.model.ContentDto
 import com.thk.instagram_clone.util.GlideApp
 
 class PostListAdapter : ListAdapter<ContentDto, PostListAdapter.PostViewHolder>(PostDiffUtil()) {

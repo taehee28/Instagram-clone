@@ -2,19 +2,13 @@ package com.thk.instagram_clone
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.thk.instagram_clone.databinding.ActivityAddPhotoBinding
-import com.thk.instagram_clone.model.ContentDto
-import java.text.SimpleDateFormat
-import java.util.*
-import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.util.LoadingDialog
 import com.thk.instagram_clone.viewmodel.AddPhotoViewModel
 import kotlinx.coroutines.launch

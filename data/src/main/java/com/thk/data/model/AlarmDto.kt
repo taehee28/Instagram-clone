@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.model
+package com.thk.data.model
 
 const val ALARM_LIKE = 0
 const val ALARM_COMMENT = 1

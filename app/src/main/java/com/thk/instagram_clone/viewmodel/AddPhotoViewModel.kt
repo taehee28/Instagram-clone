@@ -1,12 +1,9 @@
 package com.thk.instagram_clone.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.util.Firebase
-import kotlinx.coroutines.*
+import com.thk.data.model.ContentDto
+import com.thk.data.util.Firebase
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*

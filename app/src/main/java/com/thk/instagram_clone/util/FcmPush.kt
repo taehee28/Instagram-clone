@@ -3,7 +3,8 @@ package com.thk.instagram_clone.util
 import android.util.Log
 import com.google.gson.Gson
 import com.thk.instagram_clone.BuildConfig.SERVER_KEY
-import com.thk.instagram_clone.model.PushDto
+import com.thk.data.model.PushDto
+import com.thk.data.util.Firebase
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody

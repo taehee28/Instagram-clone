@@ -3,19 +3,18 @@
 package com.thk.instagram_clone.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.snapshots
-import com.thk.instagram_clone.model.ALARM_FOLLOW
-import com.thk.instagram_clone.model.AlarmDto
-import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.model.FollowDto
+import com.thk.data.model.ALARM_FOLLOW
+import com.thk.data.model.AlarmDto
+import com.thk.data.model.ContentDto
+import com.thk.data.model.FollowDto
 import com.thk.instagram_clone.util.FcmPush
-import com.thk.instagram_clone.util.PathString
-import com.thk.instagram_clone.util.Firebase
-import com.thk.instagram_clone.util.SystemString
+import com.thk.data.util.PathString
+import com.thk.data.util.Firebase
+import com.thk.data.util.SystemString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.lang.String.format
@@ -105,7 +104,8 @@ class AccountViewModel(private val uid: String?) : ViewModel() {
             if (followDto.followers.containsKey(Firebase.auth.currentUser?.uid)) {
                 it.set(
                     tsDocOthersFollower,
-                    followDto.copy(followerCount = followDto.followerCount - 1).apply { followers.remove(Firebase.auth.currentUser?.uid) }
+                    followDto.copy(followerCount = followDto.followerCount - 1).apply { followers.remove(
+                        Firebase.auth.currentUser?.uid) }
                 )
             } else {
                 it.set(

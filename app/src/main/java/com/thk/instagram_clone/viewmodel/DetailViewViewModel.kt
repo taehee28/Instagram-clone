@@ -2,22 +2,17 @@
 
 package com.thk.instagram_clone.viewmodel
 
-import androidx.databinding.Bindable
-import androidx.databinding.ObservableField
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.snapshots
-import com.thk.instagram_clone.R
-import com.thk.instagram_clone.model.ALARM_LIKE
-import com.thk.instagram_clone.model.AlarmDto
-import com.thk.instagram_clone.model.ContentDto
+import com.thk.data.model.ALARM_LIKE
+import com.thk.data.model.AlarmDto
+import com.thk.data.model.ContentDto
 import com.thk.instagram_clone.util.FcmPush
-import com.thk.instagram_clone.util.Firebase
-import com.thk.instagram_clone.util.SystemString
+import com.thk.data.util.Firebase
+import com.thk.data.util.SystemString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import okhttp3.internal.format
 
 class DetailViewViewModel : ViewModel() {

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.model
+package com.thk.data.model
 
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties

@@ -5,8 +5,8 @@ package com.thk.instagram_clone.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.snapshots
-import com.thk.instagram_clone.model.AlarmDto
-import com.thk.instagram_clone.util.Firebase
+import com.thk.data.model.AlarmDto
+import com.thk.data.util.Firebase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch

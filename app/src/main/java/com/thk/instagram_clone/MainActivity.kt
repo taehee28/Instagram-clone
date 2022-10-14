@@ -2,16 +2,13 @@ package com.thk.instagram_clone
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
 import com.thk.instagram_clone.databinding.ActivityMainBinding
-import com.thk.instagram_clone.util.Firebase
-import dagger.hilt.android.AndroidEntryPoint
+import com.thk.data.util.Firebase
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

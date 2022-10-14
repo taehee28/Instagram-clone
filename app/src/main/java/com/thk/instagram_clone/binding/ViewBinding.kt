@@ -1,16 +1,16 @@
 package com.thk.instagram_clone.binding
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.R
-import com.thk.instagram_clone.util.Firebase
+import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
-import com.thk.instagram_clone.util.PathString
+import com.thk.data.util.PathString
+import com.thk.instagram_clone.util.LoadingDialog
 
 object ViewBinding {
     @JvmStatic
@@ -56,5 +56,21 @@ object ViewBinding {
     @BindingAdapter("isLiked")
     fun bindIsLiked(view: View, map: Map<String, Boolean>) {
         view.isSelected = map.containsKey(Firebase.auth.currentUser?.uid ?: "")
+    }
+
+    @JvmStatic
+    @BindingAdapter("isLoading")
+    fun bindLoadingDialog(view: View, isLoading: Boolean) {
+        if (isLoading) {
+            LoadingDialog.show(view.context)
+        } else {
+            if (LoadingDialog.isShowing) LoadingDialog.dismiss()
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter("toast")
+    fun bindToast(view: View, message: String?) {
+        Toast.makeText(view.context, message, Toast.LENGTH_LONG).show()
     }
 }

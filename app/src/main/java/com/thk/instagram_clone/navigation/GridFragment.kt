@@ -9,11 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.firestore.ListenerRegistration
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.databinding.FragmentGridBinding
-import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.util.Firebase
 import com.thk.instagram_clone.viewmodel.DetailViewViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged

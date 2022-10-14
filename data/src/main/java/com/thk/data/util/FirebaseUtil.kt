@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.util
+package com.thk.data.util
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

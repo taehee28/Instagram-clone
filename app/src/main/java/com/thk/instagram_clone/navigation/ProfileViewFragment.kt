@@ -1,8 +1,6 @@
 package com.thk.instagram_clone.navigation
 
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,17 +10,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.google.firebase.firestore.ListenerRegistration
 import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
-import com.thk.instagram_clone.util.Firebase
+import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.instagram_clone.model.ALARM_FOLLOW
-import com.thk.instagram_clone.model.AlarmDto
-import com.thk.instagram_clone.model.ContentDto
-import com.thk.instagram_clone.model.FollowDto
-import com.thk.instagram_clone.util.FcmPush
+import com.thk.data.model.ContentDto
+import com.thk.data.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.viewmodel.AccountViewModel
 import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
