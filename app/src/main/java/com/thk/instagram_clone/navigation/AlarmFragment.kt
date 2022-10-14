@@ -67,7 +67,8 @@ class AlarmFragment : Fragment() {
     }
 }
 
-internal class AlarmListAdapter : ListAdapter<AlarmDto, AlarmListAdapter.AlarmViewHolder>(AlarmDiffUtil()) {
+internal class AlarmListAdapter : ListAdapter<AlarmDto, AlarmListAdapter.AlarmViewHolder>(
+    AlarmDiffUtil()) {
     inner class AlarmViewHolder(private val binding: ItemCommentBinding) : ViewHolder(binding.root) {
         init {
             binding.tvContent.visibility = View.INVISIBLE

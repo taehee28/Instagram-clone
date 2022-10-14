@@ -2,6 +2,9 @@ package com.thk.data
 
 import com.thk.data.repository.LoginRepository
 import com.thk.data.repository.LoginRepositoryImpl
+import com.thk.data.repository.MainRepository
+import com.thk.data.repository.MainRepositoryImpl
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -13,16 +16,16 @@ import org.junit.Before
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    private lateinit var repository: LoginRepository
+    private lateinit var loginRepository: LoginRepository
 
     @Before
     fun ready() {
-        repository = LoginRepositoryImpl()
+        loginRepository = LoginRepositoryImpl()
     }
 
     @Test
     fun test_loginWithEmail() = runBlocking {
-        repository.signIn(
+        loginRepository.signIn(
             email = "test@test.com",
             password = "123456",
             onStart = {},

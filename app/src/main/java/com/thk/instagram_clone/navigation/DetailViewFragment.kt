@@ -16,7 +16,9 @@ import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.data.model.ContentDto
 import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailViewFragment : Fragment() {
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!

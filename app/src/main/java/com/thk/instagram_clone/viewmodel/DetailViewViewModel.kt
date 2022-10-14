@@ -8,30 +8,25 @@ import com.google.firebase.firestore.ktx.snapshots
 import com.thk.data.model.ALARM_LIKE
 import com.thk.data.model.AlarmDto
 import com.thk.data.model.ContentDto
+import com.thk.data.repository.MainRepository
 import com.thk.instagram_clone.util.FcmPush
 import com.thk.data.util.Firebase
 import com.thk.data.util.SystemString
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import okhttp3.internal.format
+import javax.inject.Inject
 
-class DetailViewViewModel : ViewModel() {
+@HiltViewModel
+class DetailViewViewModel @Inject constructor(
+    private val mainRepository: MainRepository
+) : ViewModel() {
 
     /**
      * 사용자들이 업로드한 글 리스트를 가지는 Flow
      */
-    val itemsFlow = Firebase.firestore
-        .collection("images")
-        .orderBy("timestamp")
-        .snapshots()
-        .mapLatest { value ->
-            value.documents.map {
-                it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
-                    ?: throw IllegalArgumentException("null returned")
-            }
-        }.catch {
-            it.printStackTrace()
-        }.stateIn(
+    val itemsFlow = mainRepository.getPosts { print(it) }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
@@ -42,27 +37,7 @@ class DetailViewViewModel : ViewModel() {
      */
     fun onLikeClicked(contentUid: String?, isSelected: Boolean) {
         if (contentUid.isNullOrBlank()) return
-
-        val tsDoc = Firebase.firestore.collection("images").document(contentUid)
-
-        Firebase.firestore.runTransaction { transaction ->
-            val item = transaction.get(tsDoc).toObject(ContentDto::class.java) ?: return@runTransaction
-
-            val isContains = Firebase.auth.currentUser?.uid?.let {
-                if (isSelected) item.likedUsers.put(it, true) else item.likedUsers.remove(it)
-                item.likedUsers.contains(it)
-            }
-
-            // null이라는 것은 로그인된 유저의 uid가 없다는것 == 비정상
-            isContains ?: return@runTransaction
-
-            transaction.set(
-                tsDoc,
-                item.copy(
-                    likeCount = item.likeCount + if (isContains) 1 else -1
-                )
-            )
-        }
+        mainRepository.requestLike(contentUid, isSelected)
     }
 
     /**
