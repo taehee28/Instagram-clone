@@ -1,8 +1,8 @@
-package com.thk.instagram_clone.util
+package com.thk.data.remote
 
 import android.util.Log
 import com.google.gson.Gson
-import com.thk.instagram_clone.BuildConfig.SERVER_KEY
+import com.thk.data.BuildConfig
 import com.thk.data.model.PushDto
 import com.thk.data.util.Firebase
 import okhttp3.*
@@ -35,7 +35,7 @@ object FcmPush {
                     val body = gson.toJson(pushDto).toRequestBody(json)
                     val request = Request.Builder()
                         .addHeader("Content-Type", "application/json")
-                        .addHeader("Authorization", "key=$SERVER_KEY")
+                        .addHeader("Authorization", "key=${BuildConfig.SERVER_KEY}")
                         .url(url)
                         .post(body)
                         .build()

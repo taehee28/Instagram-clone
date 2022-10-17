@@ -16,7 +16,9 @@ import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.data.model.ContentDto
 import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailViewFragment : Fragment() {
     private var _binding: FragmentDetailViewBinding? = null
     private val binding get() = _binding!!
@@ -37,7 +39,6 @@ class DetailViewFragment : Fragment() {
 
         listAdapter.apply {
             likeClickEvent = viewModel::onLikeClicked
-            likeAlarmEvent = viewModel::registerLikeAlarm
             profileClickEvent = onProfileClicked
             commentClickEvent = onCommentClicked
         }
@@ -81,7 +82,6 @@ class DetailViewFragment : Fragment() {
  */
 class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHolder>(DetailDiffUtil()) {
     var likeClickEvent: ((String?, Boolean) -> Unit)? = null
-    var likeAlarmEvent: ((String?) -> Unit)? = null
     var profileClickEvent: ((String?, String?) -> Unit)? = null
     var commentClickEvent: ((String?, String?) -> Unit)? = null
 
@@ -96,7 +96,6 @@ class DetailListAdapter : ListAdapter<ContentDto, DetailListAdapter.DetailViewHo
                 btnLike.setOnClickListener { view ->
                     view.isSelected = !view.isSelected
                     likeClickEvent?.invoke(contentUid, view.isSelected)
-                    if (view.isSelected) likeAlarmEvent?.invoke(userUid)
                 }
 
                 ivProfile.setOnClickListener {

@@ -11,7 +11,6 @@ import com.thk.data.model.ALARM_FOLLOW
 import com.thk.data.model.AlarmDto
 import com.thk.data.model.ContentDto
 import com.thk.data.model.FollowDto
-import com.thk.instagram_clone.util.FcmPush
 import com.thk.data.util.PathString
 import com.thk.data.util.Firebase
 import com.thk.data.util.SystemString
@@ -136,7 +135,7 @@ class AccountViewModel(private val uid: String?) : ViewModel() {
             .set(alarmDto)
 
         val msg = format(SystemString.ALARM_FOLLOW, Firebase.auth.currentUser?.uid)
-        FcmPush.sendMessage(it, "Instagram-clone", msg)
+//        FcmPush.sendMessage(it, "Instagram-clone", msg)
     }
 }
 

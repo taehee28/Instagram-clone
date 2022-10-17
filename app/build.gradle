@@ -7,9 +7,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 android {
     compileSdk 32
 
@@ -23,8 +20,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled = true
-
-        buildConfigField "String", "SERVER_KEY", properties['server_key']
     }
 
     buildTypes {
