@@ -3,6 +3,7 @@
 package com.thk.instagram_clone.viewmodel
 
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,56 +12,46 @@ import com.thk.data.model.ALARM_FOLLOW
 import com.thk.data.model.AlarmDto
 import com.thk.data.model.ContentDto
 import com.thk.data.model.FollowDto
+import com.thk.data.repository.MainRepository
 import com.thk.data.util.PathString
 import com.thk.data.util.Firebase
 import com.thk.data.util.SystemString
+import com.thk.instagram_clone.util.logd
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.lang.String.format
+import javax.inject.Inject
 
-class AccountViewModel(private val uid: String?) : ViewModel() {
-    val profileImageUrl = Firebase.firestore
-        .collection(PathString.profileImages)
-        .document(uid ?: "")
-        .snapshots()
-        .mapLatest { value ->
-            value.data?.get("image").toString()
-        }.catch {
-            it.printStackTrace()
-        }.distinctUntilChanged()
+@HiltViewModel
+class AccountViewModel @Inject constructor(
+    private val mainRepository: MainRepository,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+    private val uid: String?
+
+    init {
+        uid = savedStateHandle.get<String>("uid")?.ifBlank { null } ?: Firebase.auth.currentUser?.uid
+    }
+
+    val profileImageUrl = mainRepository.getProfileImageUrl(uid) { print(it) }
+        .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
 
-    val followData = Firebase.firestore
-        .collection(PathString.users)
-        .document(uid ?: "")
-        .snapshots()
-        .mapLatest { value ->
-            value.toObject(FollowDto::class.java) ?: throw IllegalArgumentException("null returned")
-        }.catch {
-            it.printStackTrace()
-        }.distinctUntilChanged()
+    val followData = mainRepository.getFollowData(uid) { print(it) }
+        .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = FollowDto()
         )
 
-    val postList = Firebase.firestore
-        .collection(PathString.images)
-        .whereEqualTo("uid", uid ?: "")
-        .snapshots()
-        .mapLatest { value ->
-            value.documents.map {
-                it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
-                    ?: throw IllegalArgumentException("null returned")
-            }
-        }.catch {
-            it.printStackTrace()
-        }.distinctUntilChanged()
+    val postList = mainRepository.getPosts(uid) { print(it) }
+        .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -145,7 +136,8 @@ class AccountViewModel(private val uid: String?) : ViewModel() {
     }
 }
 
+/*
 class AccountViewModelFactory(private val uid: String?) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         AccountViewModel(uid) as T
-}
+}*/

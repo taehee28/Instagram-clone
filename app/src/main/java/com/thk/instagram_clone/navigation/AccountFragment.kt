@@ -10,28 +10,21 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.thk.instagram_clone.LoginActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.data.model.ContentDto
-import com.thk.data.model.FollowDto
-import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.util.LoadingDialog
 import com.thk.instagram_clone.viewmodel.AccountViewModel
-import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AccountFragment : Fragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AccountViewModel by viewModels { AccountViewModelFactory(Firebase.auth.currentUser?.uid) }
+    private val viewModel: AccountViewModel by viewModels()
 
     private val albumLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -61,19 +54,20 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnProfile.setOnClickListener {
-            activity?.run {
-                Firebase.auth.signOut()
-                startActivity(Intent(activity, LoginActivity::class.java))
-                finish()
-            }
-        }
-        binding.ivProfile.setOnClickListener {
-            val imagePickerIntent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
-            albumLauncher.launch(imagePickerIntent)
-        }
-
         binding.apply {
+            btnProfile.setOnClickListener {
+                activity?.run {
+                    Firebase.auth.signOut()
+                    startActivity(Intent(activity, LoginActivity::class.java))
+                    finish()
+                }
+            }
+
+            ivProfile.setOnClickListener {
+                val imagePickerIntent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
+                albumLauncher.launch(imagePickerIntent)
+            }
+
             lifecycleOwner = viewLifecycleOwner
             adapter = PostListAdapter()
             vm = viewModel

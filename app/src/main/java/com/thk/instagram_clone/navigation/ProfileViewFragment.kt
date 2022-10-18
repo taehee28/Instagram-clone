@@ -7,27 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.data.model.ContentDto
 import com.thk.data.model.FollowDto
-import com.thk.instagram_clone.util.GlideApp
-import com.thk.instagram_clone.util.logd
 import com.thk.instagram_clone.viewmodel.AccountViewModel
-import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class ProfileViewFragment : Fragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
@@ -36,7 +27,7 @@ class ProfileViewFragment : Fragment() {
     private val uid: String? by lazy { args.uid.ifBlank { Firebase.auth.currentUser?.uid } }
     private val userId: String? by lazy { args.userId.ifBlank { Firebase.auth.currentUser?.email } }
 
-    private val viewModel: AccountViewModel by viewModels { AccountViewModelFactory(uid) }
+    private val viewModel: AccountViewModel by viewModels()
 
     private var followDto: FollowDto by Delegates.observable(FollowDto()) { _, _, newValue ->
         kotlin.runCatching {
