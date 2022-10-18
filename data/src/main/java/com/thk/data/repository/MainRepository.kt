@@ -4,15 +4,11 @@ package com.thk.data.repository
 
 import android.net.Uri
 import com.google.firebase.firestore.ktx.snapshots
-import com.thk.data.model.ALARM_LIKE
-import com.thk.data.model.AlarmDto
-import com.thk.data.model.ContentDto
-import com.thk.data.model.FollowDto
+import com.thk.data.model.*
 import com.thk.data.remote.FcmPush
 import com.thk.data.util.Firebase
 import com.thk.data.util.PathString
 import com.thk.data.util.SystemString
-import com.thk.data.util.logd
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -42,12 +38,20 @@ interface MainRepository {
      */
     fun getProfileImageUrl(uid: String?, onError: (String?) -> Unit): Flow<String>
 
+    /**
+     * 프로필 사진 업로드
+     */
     suspend fun uploadProfileImage(
         uri: Uri?,
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit
     )
+
+    /**
+     * 팔로우/언팔로우 요청 처리 
+     */
+    fun requestFollow(targetUid: String, followDto: FollowDto)
 
     /**
      * 좋아요 처리
@@ -154,6 +158,66 @@ class MainRepositoryImpl : MainRepository {
         }.also {
             onComplete()
         }
+    }
+
+    override fun requestFollow(targetUid: String, followDto: FollowDto) {
+        val tsDocMyFollowing = Firebase.firestore.collection("users").document(Firebase.auth.currentUser?.uid!!)
+        Firebase.firestore.runTransaction {
+            val myFollow = it.get(tsDocMyFollowing).toObject(FollowDto::class.java) ?: FollowDto()
+
+            val modified = if (myFollow.followings.containsKey(targetUid)) {
+                myFollow.copy(followingCount = myFollow.followingCount - 1).apply { followings.remove(targetUid) }
+            } else {
+                myFollow.copy(followingCount = myFollow.followingCount + 1).apply { followings[targetUid] = true }
+            }
+
+            it.set(
+                tsDocMyFollowing,
+                modified
+            )
+        }
+
+        val tsDocOthersFollower = Firebase.firestore.collection("users").document(targetUid)
+        Firebase.firestore.runTransaction {
+            val isContains = followDto.followers.containsKey(Firebase.auth.currentUser?.uid)
+            val modified = if (isContains) {
+                followDto
+                    .copy(followerCount = followDto.followerCount - 1)
+                    .apply { followers.remove(Firebase.auth.currentUser?.uid) }
+            } else {
+                followDto
+                    .copy(followerCount = followDto.followerCount + 1)
+                    .apply { followers[Firebase.auth.currentUser?.uid!!] = true }
+            }
+
+            it.set(
+                tsDocOthersFollower,
+                modified
+            )
+
+            if (isContains) registerFollowAlarm(targetUid)
+        }
+    }
+
+    /**
+     * 팔로우 시 상대방에게 푸시알람 전송
+     */
+    private fun registerFollowAlarm(targetUid: String) {
+        val alarmDto = AlarmDto(
+            destinationUid = targetUid,
+            userId = Firebase.auth.currentUser?.email ?: "",
+            uid = Firebase.auth.currentUser?.uid ?: "",
+            kind = ALARM_FOLLOW,
+            timestamp = System.currentTimeMillis()
+        )
+
+        Firebase.firestore
+            .collection("alarms")
+            .document()
+            .set(alarmDto)
+
+        val msg = format(SystemString.ALARM_FOLLOW, Firebase.auth.currentUser?.uid)
+        FcmPush.sendMessage(targetUid, "Instagram-clone", msg)
     }
 
     override fun requestLike(contentUid: String, isSelected: Boolean) {
