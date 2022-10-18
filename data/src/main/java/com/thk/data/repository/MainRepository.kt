@@ -2,6 +2,7 @@
 
 package com.thk.data.repository
 
+import android.net.Uri
 import com.google.firebase.firestore.ktx.snapshots
 import com.thk.data.model.ALARM_LIKE
 import com.thk.data.model.AlarmDto
@@ -11,11 +12,13 @@ import com.thk.data.remote.FcmPush
 import com.thk.data.util.Firebase
 import com.thk.data.util.PathString
 import com.thk.data.util.SystemString
+import com.thk.data.util.logd
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.tasks.await
 import java.lang.String.format
 
 interface MainRepository {
@@ -38,6 +41,13 @@ interface MainRepository {
      * 특정 uid의 프로필 이미지 url 얻기
      */
     fun getProfileImageUrl(uid: String?, onError: (String?) -> Unit): Flow<String>
+
+    suspend fun uploadProfileImage(
+        uri: Uri?,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    )
 
     /**
      * 좋아요 처리
@@ -113,6 +123,38 @@ class MainRepositoryImpl : MainRepository {
     }.onFailure {
         it.printStackTrace()
     }.getOrDefault(emptyFlow())
+
+    override suspend fun uploadProfileImage(
+        uri: Uri?,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        kotlin.runCatching {
+            val uid = requireNotNull(Firebase.auth.currentUser?.uid)
+            requireNotNull(uri)
+
+            Firebase.storage
+                .reference
+                .child(PathString.userProfileImages)
+                .child(uid)
+                .also { ref ->
+                    val downloadUri = ref.putFile(uri)
+                        .await()
+                        .storage
+                        .downloadUrl
+                        .await()
+                        .toString()
+
+                    val map = mapOf("image" to downloadUri)
+                    Firebase.firestore.collection(PathString.profileImages).document(uid).set(map)
+                }
+        }.onFailure {
+            onError(it.message)
+        }.also {
+            onComplete()
+        }
+    }
 
     override fun requestLike(contentUid: String, isSelected: Boolean) {
         val tsDoc = Firebase.firestore.collection("images").document(contentUid)

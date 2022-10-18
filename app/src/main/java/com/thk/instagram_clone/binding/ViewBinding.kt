@@ -74,7 +74,7 @@ object ViewBinding {
         if (isLoading) {
             LoadingDialog.show(view.context)
         } else {
-            if (LoadingDialog.isShowing) LoadingDialog.dismiss()
+            LoadingDialog.dismiss()
         }
     }
 

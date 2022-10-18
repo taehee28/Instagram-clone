@@ -3,23 +3,20 @@
 package com.thk.instagram_clone.viewmodel
 
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.ktx.snapshots
 import com.thk.data.model.ALARM_FOLLOW
 import com.thk.data.model.AlarmDto
-import com.thk.data.model.ContentDto
 import com.thk.data.model.FollowDto
 import com.thk.data.repository.MainRepository
-import com.thk.data.util.PathString
 import com.thk.data.util.Firebase
 import com.thk.data.util.SystemString
-import com.thk.instagram_clone.util.logd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.lang.String.format
 import javax.inject.Inject
 
@@ -29,6 +26,9 @@ class AccountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val uid: String?
+
+    val showLoading = MutableLiveData(false)
+    val errorMessage = MutableLiveData("")
 
     init {
         uid = savedStateHandle.get<String>("uid")?.ifBlank { null } ?: Firebase.auth.currentUser?.uid
@@ -62,19 +62,14 @@ class AccountViewModel @Inject constructor(
      * 프로필 사진 업로드.
      * AccountFragment에서만 사용
      */
-    fun uploadProfileImage(imageUri: Uri?, callback: (() -> Unit)? = null) = imageUri?.also { Firebase.auth.currentUser?.uid?.also { uid ->
-        Firebase.storage.reference.child(PathString.userProfileImages).child(uid).also { ref ->
-            ref.putFile(imageUri)
-                .continueWithTask { ref.downloadUrl }
-                .addOnSuccessListener { uri ->
-                    val map = mapOf("image" to uri.toString())
-                    Firebase.firestore.collection(PathString.profileImages).document(uid).set(map)
-
-                    callback?.invoke()
-                }
-        }
-    } }
-
+    fun uploadProfileImage(imageUri: Uri?) = viewModelScope.launch {
+        mainRepository.uploadProfileImage(
+            uri = imageUri,
+            onStart = { showLoading.value = true },
+            onComplete = { showLoading.value = false },
+            onError = { errorMessage.value = it }
+        )
+    }
     /**
      * 팔로우/언팔로우 요청 처리
      */

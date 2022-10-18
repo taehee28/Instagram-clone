@@ -34,6 +34,3 @@ object LoadingDialog {
         dialog = null
     }
 }
-
-
-inline fun <reified T> T.logd(message: String) = Log.d(T::class.java.simpleName, message)
