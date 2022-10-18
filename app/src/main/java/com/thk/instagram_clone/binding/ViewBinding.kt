@@ -53,6 +53,16 @@ object ViewBinding {
     }
 
     @JvmStatic
+    @BindingAdapter("accountProfileUrl")
+    fun bindAccountProfileUrl(view: ImageView, url: String?) {
+        GlideApp.with(view)
+            .load(url)
+            .circleCrop()
+            .error(R.drawable.ic_account)
+            .into(view)
+    }
+
+    @JvmStatic
     @BindingAdapter("isLiked")
     fun bindIsLiked(view: View, map: Map<String, Boolean>) {
         view.isSelected = map.containsKey(Firebase.auth.currentUser?.uid ?: "")

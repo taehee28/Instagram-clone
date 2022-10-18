@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -18,15 +19,16 @@ import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.data.model.ContentDto
 import com.thk.data.model.FollowDto
 import com.thk.instagram_clone.util.GlideApp
+import com.thk.instagram_clone.util.logd
 import com.thk.instagram_clone.viewmodel.AccountViewModel
 import com.thk.instagram_clone.viewmodel.AccountViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 class ProfileViewFragment : Fragment() {
-    private val TAG = ProfileViewFragment::class.simpleName
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
@@ -50,8 +52,6 @@ class ProfileViewFragment : Fragment() {
         }
     }
 
-    private val listAdapter = PostListAdapter()
-
     companion object {
         @JvmStatic
         fun newInstance() = ProfileViewFragment()
@@ -61,9 +61,7 @@ class ProfileViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAccountBinding.inflate(inflater, container, false)
-
-        binding.rvPostList.adapter = listAdapter.apply { /*todo: onClick*/ }
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
 
         return binding.root
     }
@@ -75,28 +73,10 @@ class ProfileViewFragment : Fragment() {
 
         setupProfileButton()
 
-        lifecycleScope.launch {
-            viewModel.accountDataFlow
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .collectLatest {
-                    when (it) {
-                        is String -> {
-                            GlideApp.with(binding.ivProfile)
-                                .load(it)
-                                .circleCrop()
-                                .error(R.drawable.ic_account)
-                                .into(binding.ivProfile)
-                        }
-                        is FollowDto -> {
-                            followDto = it
-                        }
-                        is List<*> -> {
-                            val list = it.filterIsInstance<ContentDto>()
-                            listAdapter.submitList(list)
-                        }
-                    }
-                }
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            adapter = PostListAdapter()
+            vm = viewModel
         }
     }
 

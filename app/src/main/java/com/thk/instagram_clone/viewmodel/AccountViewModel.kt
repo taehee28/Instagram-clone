@@ -19,23 +19,37 @@ import kotlinx.coroutines.flow.*
 import java.lang.String.format
 
 class AccountViewModel(private val uid: String?) : ViewModel() {
-    private val profileImageUrl = Firebase.firestore
+    val profileImageUrl = Firebase.firestore
         .collection(PathString.profileImages)
         .document(uid ?: "")
         .snapshots()
         .mapLatest { value ->
             value.data?.get("image").toString()
-        }
+        }.catch {
+            it.printStackTrace()
+        }.distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ""
+        )
 
-    private val followData = Firebase.firestore
+    val followData = Firebase.firestore
         .collection(PathString.users)
         .document(uid ?: "")
         .snapshots()
         .mapLatest { value ->
             value.toObject(FollowDto::class.java) ?: throw IllegalArgumentException("null returned")
-        }
+        }.catch {
+            it.printStackTrace()
+        }.distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FollowDto()
+        )
 
-    private val postList = Firebase.firestore
+    val postList = Firebase.firestore
         .collection(PathString.images)
         .whereEqualTo("uid", uid ?: "")
         .snapshots()
@@ -44,22 +58,14 @@ class AccountViewModel(private val uid: String?) : ViewModel() {
                 it.toObject(ContentDto::class.java)?.copy(contentUid = it.id)
                     ?: throw IllegalArgumentException("null returned")
             }
-        }
-
-    /**
-     * 프로필 이미지, 팔로우 정보, 올린 글 리스트 Flow들을 하나로 합친 StateFlow
-     */
-    val accountDataFlow = merge(
-        profileImageUrl,
-        followData,
-        postList
-    ).catch {
-        it.printStackTrace()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = Unit
-    )
+        }.catch {
+            it.printStackTrace()
+        }.distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     /**
      * 프로필 사진 업로드.

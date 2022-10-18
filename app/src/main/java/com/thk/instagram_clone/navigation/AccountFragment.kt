@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -27,12 +28,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class AccountFragment : Fragment() {
-    private val TAG = AccountFragment::class.simpleName
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: AccountViewModel by viewModels { AccountViewModelFactory(Firebase.auth.currentUser?.uid) }
-    private val listAdapter = PostListAdapter()
 
     private val albumLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -55,10 +54,7 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAccountBinding.inflate(inflater, container, false)
-
-        binding.rvPostList.adapter = listAdapter
-
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
         return binding.root
     }
 
@@ -77,31 +73,10 @@ class AccountFragment : Fragment() {
             albumLauncher.launch(imagePickerIntent)
         }
 
-        lifecycleScope.launch {
-            viewModel.accountDataFlow
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .collectLatest {
-                    when (it) {
-                        is String -> {
-                            GlideApp.with(binding.ivProfile)
-                                .load(it)
-                                .circleCrop()
-                                .error(R.drawable.ic_account)
-                                .into(binding.ivProfile)
-                        }
-                        is FollowDto -> {
-                            binding.apply {
-                                tvFollowingCount.text = it.followingCount.toString()
-                                tvFollowerCount.text = it.followerCount.toString()
-                            }
-                        }
-                        is List<*> -> {
-                            val list = it.filterIsInstance<ContentDto>()
-                            listAdapter.submitList(list)
-                        }
-                    }
-                }
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            adapter = PostListAdapter()
+            vm = viewModel
         }
     }
 
