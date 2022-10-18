@@ -18,7 +18,9 @@ class DetailViewViewModel @Inject constructor(
     /**
      * 사용자들이 업로드한 글 리스트를 가지는 Flow
      */
-    val itemsFlow = mainRepository.getPosts { print(it) }.stateIn(
+    val itemsFlow = mainRepository.getPosts { print(it) }
+        .distinctUntilChanged()
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
