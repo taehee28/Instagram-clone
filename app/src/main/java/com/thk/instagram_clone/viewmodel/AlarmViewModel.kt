@@ -6,30 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.snapshots
 import com.thk.data.model.AlarmDto
+import com.thk.data.repository.MainRepository
 import com.thk.data.util.Firebase
+import com.thk.data.util.logd
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
-class AlarmViewModel : ViewModel() {
+@HiltViewModel
+class AlarmViewModel @Inject constructor(
+    private val mainRepository: MainRepository
+) : ViewModel() {
 
     /**
      * 알람 리스트를 가지는 Flow
      */
-    val alarmsFlow = Firebase.firestore
-        .collection("alarms")
-        .whereEqualTo("destinationUid", Firebase.auth.currentUser?.uid)
-        .snapshots()
-        .mapLatest { value ->
-            value.documents.map {
-                it.toObject(AlarmDto::class.java)
-                    ?: throw IllegalArgumentException("null returned")
-            }
-        }.catch {
-            it.printStackTrace()
-        }.stateIn(
+    val alarmsFlow = mainRepository.getAlarmList { logd(it ?: "message is null") }
+        .distinctUntilChanged()
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()

@@ -57,6 +57,8 @@ interface MainRepository {
      * 좋아요 처리
      */
     fun requestLike(contentUid: String, isSelected: Boolean)
+
+    fun getAlarmList(onError: (String?) -> Unit): Flow<List<AlarmDto>>
 }
 
 class MainRepositoryImpl : MainRepository {
@@ -266,4 +268,26 @@ class MainRepositoryImpl : MainRepository {
         val msg = format(SystemString.ALARM_FAVORITE, Firebase.auth.currentUser?.email ?: "")
         FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
     }
+
+    override fun getAlarmList(onError: (String?) -> Unit): Flow<List<AlarmDto>> = kotlin.runCatching {
+        val uid = requireNotNull(Firebase.auth.currentUser?.uid)
+
+        Firebase.firestore
+            .collection("alarms")
+            .whereEqualTo("destinationUid", uid)
+            .snapshots()
+            .mapLatest { value ->
+                value.documents.map {
+                    it.toObject(AlarmDto::class.java)
+                        ?: throw IllegalArgumentException("null returned")
+                }
+            }.catch {
+                it.printStackTrace()
+                onError(it.message)
+            }
+
+    }.onFailure {
+        it.printStackTrace()
+        onError(it.message)
+    }.getOrDefault(emptyFlow())
 }

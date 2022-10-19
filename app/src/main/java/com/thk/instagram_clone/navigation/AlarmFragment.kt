@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -22,17 +23,17 @@ import com.thk.data.model.AlarmDto
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.viewmodel.AlarmViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AlarmFragment : Fragment() {
-    private val TAG = AlarmFragment::class.simpleName
     private var _binding: FragmentAlarmBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: AlarmViewModel by viewModels()
-    private val listAdapter = AlarmListAdapter()
 
     companion object {
         @JvmStatic
@@ -43,22 +44,19 @@ class AlarmFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAlarmBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_alarm, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvAlarmList.adapter = listAdapter
 
-        lifecycleScope.launch {
-            viewModel.alarmsFlow
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .collectLatest {
-                    listAdapter.submitList(it)
-                }
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            vm = viewModel
+            adapter = AlarmListAdapter()
         }
+
     }
 
     override fun onDestroyView() {
