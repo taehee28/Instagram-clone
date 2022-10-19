@@ -39,16 +39,10 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         setContentView(binding.root)
 
-        binding.vm = loginViewModel
-
         binding.apply {
-            btnLoginEmail.setOnClickListener {
-                loginViewModel.signIn(
-                    binding.etEmail.text.toString(),
-                    binding.etPassword.text.toString()
-                )
-            }
-            btnLoginGoogle.setOnClickListener { googleLogin() }
+            lifecycleOwner = this@LoginActivity
+            vm = loginViewModel
+            activity = this@LoginActivity
         }
 
         loginViewModel.uiEvent.observe(this) {
@@ -67,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Google 계정에 로그인해서 계정 정보를 callback으로 받아옴
      */
-    private fun googleLogin() = googleLoginLauncher.launch(googleSignInClient.signInIntent)
+    fun googleLogin() = googleLoginLauncher.launch(googleSignInClient.signInIntent)
 
 
     private fun moveToMainPage() {

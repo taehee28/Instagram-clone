@@ -42,11 +42,7 @@ class AddPhotoActivity : AppCompatActivity() {
         binding.apply {
             lifecycleOwner = this@AddPhotoActivity
             vm = viewModel
-            btnUpload.setOnClickListener {
-                viewModel.uploadContent(etDescription.text?.toString()) {
-                    finish()
-                }
-            }
+            finish = this@AddPhotoActivity::finish
         }
 
         val imagePickerIntent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }

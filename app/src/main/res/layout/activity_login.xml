@@ -7,6 +7,9 @@
         <variable
             name="vm"
             type="com.thk.instagram_clone.viewmodel.LoginViewModel" />
+        <variable
+            name="activity"
+            type="com.thk.instagram_clone.LoginActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,6 +72,7 @@
             android:layout_height="40dp"
             android:text="@string/signin_email"
             android:layout_marginBottom="35dp"
+            android:onClick="@{() -> vm.signIn(etEmail.getText().toString(), etPassword.getText().toString())}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btn_login_google"
@@ -80,6 +84,7 @@
             android:layout_height="40dp"
             android:text="@string/signin_google"
             android:background="@drawable/btn_signin_google"
+            android:onClick="@{() -> activity.googleLogin()}"
             android:layout_marginBottom="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
