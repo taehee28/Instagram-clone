@@ -69,8 +69,8 @@ class AccountViewModel @Inject constructor(
     /**
      * 팔로우/언팔로우 요청 처리
      */
-    fun requestFollow(followDto: FollowDto) = kotlin.runCatching {
-        mainRepository.requestFollow(uid!!, followDto)
+    fun requestFollow() = kotlin.runCatching {
+        mainRepository.requestFollow(uid!!, followData.value)
     }
 }
 

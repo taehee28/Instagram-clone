@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.thk.instagram_clone.MainActivity
 import com.thk.instagram_clone.R
@@ -16,6 +19,9 @@ import com.thk.instagram_clone.databinding.FragmentAccountBinding
 import com.thk.data.model.FollowDto
 import com.thk.instagram_clone.viewmodel.AccountViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
@@ -28,20 +34,6 @@ class ProfileViewFragment : Fragment() {
     private val userId: String? by lazy { args.userId.ifBlank { Firebase.auth.currentUser?.email } }
 
     private val viewModel: AccountViewModel by viewModels()
-
-    private var followDto: FollowDto by Delegates.observable(FollowDto()) { _, _, newValue ->
-        kotlin.runCatching {
-            binding.apply {
-                tvFollowingCount.text = newValue.followingCount.toString()
-                tvFollowerCount.text = newValue.followerCount.toString()
-                if (newValue.followers.contains(Firebase.auth.currentUser?.uid)) {
-                    btnProfile.setText(R.string.follow_cancel)
-                } else {
-                    btnProfile.setText(R.string.follow)
-                }
-            }
-        }
-    }
 
     companion object {
         @JvmStatic
@@ -69,6 +61,19 @@ class ProfileViewFragment : Fragment() {
             adapter = PostListAdapter()
             vm = viewModel
         }
+
+        lifecycleScope.launch {
+            viewModel.followData
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (it.followers.contains(Firebase.auth.currentUser?.uid)) {
+                        binding.btnProfile.setText(R.string.follow_cancel)
+                    } else {
+                        binding.btnProfile.setText(R.string.follow)
+                    }
+                }
+        }
     }
 
     override fun onDestroyView() {
@@ -78,8 +83,7 @@ class ProfileViewFragment : Fragment() {
 
     private fun setupProfileButton() = uid?.also {
         binding.btnProfile.apply {
-            setText(R.string.follow)
-            setOnClickListener { viewModel.requestFollow(followDto) }
+            setOnClickListener { viewModel.requestFollow() }
             isEnabled = it != Firebase.auth.currentUser?.uid
         }
     }
