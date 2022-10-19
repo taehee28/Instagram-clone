@@ -31,7 +31,6 @@ class AccountFragment : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // 사진을 선택했을 때
-            LoadingDialog.show(requireContext())
             viewModel.uploadProfileImage(result.data?.data)
         }
     }

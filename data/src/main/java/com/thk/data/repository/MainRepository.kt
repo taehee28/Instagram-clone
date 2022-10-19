@@ -148,6 +148,8 @@ class MainRepositoryImpl : MainRepository {
         onError: (String?) -> Unit
     ) {
         kotlin.runCatching {
+            onStart()
+
             val uid = requireNotNull(Firebase.auth.currentUser?.uid)
             requireNotNull(uri)
 
