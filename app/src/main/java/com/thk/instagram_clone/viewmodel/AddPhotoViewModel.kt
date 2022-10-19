@@ -1,48 +1,36 @@
 package com.thk.instagram_clone.viewmodel
 
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.thk.data.model.ContentDto
+import com.thk.data.repository.MainRepository
 import com.thk.data.util.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class AddPhotoViewModel : ViewModel() {
-    private var uri: Uri? = null
+@HiltViewModel
+class AddPhotoViewModel @Inject constructor(
+    private val mainRepository: MainRepository
+) : ViewModel() {
+    val uri = MutableLiveData(Uri.parse(""))
 
-    fun setUri(uri: Uri?) {
-        this.uri = uri
-    }
+    val showLoading = MutableLiveData(false)
+    val errorMessage = MutableLiveData("")
 
-    suspend fun uploadContent(text: String): Result<Unit> = kotlin.runCatching {
-        requireNotNull(uri) { "No selected image" }
-
-        val fileName = createFileName()
-        val storageRef = Firebase.storage.reference.child("images").child(fileName)
-
-            val uploadedUri = storageRef
-                    .putFile(uri!!)
-                    .await()
-                    .storage
-                    .downloadUrl
-                    .await()
-                    .toString()
-
-            val contentDto = ContentDto(
-                imageUrl = uploadedUri,
-                uid = Firebase.auth.currentUser?.uid,
-                userId = Firebase.auth.currentUser?.email,
-                description = text,
-                timestamp = System.currentTimeMillis()
-            )
-
-            // 포스트 자체를 저장
-            Firebase.firestore.collection("images").document().set(contentDto).await()
-    }
-
-    private fun createFileName() = run {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        "Image_${timestamp}_.png"
+    fun uploadContent(text: String?, onSuccess: () -> Unit) = viewModelScope.launch {
+        mainRepository.uploadContent(
+            photoUri = uri.value,
+            text = text,
+            onStart = { showLoading.value = true },
+            onSuccess = onSuccess,
+            onComplete = { showLoading.value = false },
+            onError = { errorMessage.value = it }
+        )
     }
 }

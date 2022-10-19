@@ -1,5 +1,6 @@
 package com.thk.instagram_clone.binding
 
+import android.net.Uri
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -10,6 +11,7 @@ import com.thk.instagram_clone.R
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.data.util.PathString
+import com.thk.data.util.logd
 import com.thk.instagram_clone.util.LoadingDialog
 
 object ViewBinding {
@@ -27,11 +29,18 @@ object ViewBinding {
 
     @JvmStatic
     @BindingAdapter("imageUrl")
-    fun bindImageUrl(view: ImageView, url: String) {
+    fun bindImageUrl(view: ImageView, url: String?) {
         GlideApp.with(view)
             .load(url)
             .into(view)
+    }
 
+    @JvmStatic
+    @BindingAdapter("imageUri")
+    fun bindImageUri(view: ImageView, uri: Uri?) {
+        GlideApp.with(view)
+            .load(uri)
+            .into(view)
     }
 
     @JvmStatic
@@ -81,6 +90,7 @@ object ViewBinding {
     @JvmStatic
     @BindingAdapter("toast")
     fun bindToast(view: View, message: String?) {
+        if (message.isNullOrBlank()) return
         Toast.makeText(view.context, message, Toast.LENGTH_LONG).show()
     }
 }

@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.tasks.await
 import java.lang.String.format
+import java.text.SimpleDateFormat
+import java.util.*
 
 interface MainRepository {
     /**
@@ -59,6 +61,15 @@ interface MainRepository {
     fun requestLike(contentUid: String, isSelected: Boolean)
 
     fun getAlarmList(onError: (String?) -> Unit): Flow<List<AlarmDto>>
+
+    suspend fun uploadContent(
+        photoUri: Uri?,
+        text: String?,
+        onStart: () -> Unit,
+        onSuccess: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    )
 }
 
 class MainRepositoryImpl : MainRepository {
@@ -290,4 +301,53 @@ class MainRepositoryImpl : MainRepository {
         it.printStackTrace()
         onError(it.message)
     }.getOrDefault(emptyFlow())
+
+    override suspend fun uploadContent(
+        photoUri: Uri?,
+        text: String?,
+        onStart: () -> Unit,
+        onSuccess: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        kotlin.runCatching {
+            onStart()
+
+            requireNotNull(photoUri) { "Photo must be selected" }
+            require(!text.isNullOrBlank()) { "Description must not be empty" }
+
+            val fileName = createFileName()
+            val storageRef = Firebase.storage.reference.child("images").child(fileName)
+
+            val uploadedUri = storageRef
+                .putFile(photoUri)
+                .await()
+                .storage
+                .downloadUrl
+                .await()
+                .toString()
+
+            val contentDto = ContentDto(
+                imageUrl = uploadedUri,
+                uid = Firebase.auth.currentUser?.uid,
+                userId = Firebase.auth.currentUser?.email,
+                description = text,
+                timestamp = System.currentTimeMillis()
+            )
+
+            // 포스트 자체를 저장
+            Firebase.firestore.collection("images").document().set(contentDto).await()
+        }.onSuccess {
+            onSuccess()
+        }.onFailure {
+            onError(it.message)
+        }.also {
+            onComplete()
+        }
+    }
+
+    private fun createFileName() = run {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        "Image_${timestamp}_.png"
+    }
 }

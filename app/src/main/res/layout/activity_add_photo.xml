@@ -1,68 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AddPhotoActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <data>
+        <variable
+            name="vm"
+            type="com.thk.instagram_clone.viewmodel.AddPhotoViewModel" />
+    </data>
 
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            app:contentInsetStart="0dp"
-            android:paddingVertical="4dp"
-            app:logo="@drawable/logo_title" />
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        tools:context=".AddPhotoActivity">
 
-        <ImageView
-            android:id="@+id/iv_photo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-        
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_photo">
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_description"
+            <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
+                android:layout_height="35dp"
+                app:contentInsetStart="0dp"
+                android:paddingVertical="4dp"
+                app:logo="@drawable/logo_title" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            app:isLoading="@{vm.showLoading}"
+            app:toast="@{vm.errorMessage}"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+            <ImageView
+                android:id="@+id/iv_photo"
+                android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:hint="@string/hint_image_content"
-                android:gravity="top|start"
-                android:minLines="2"
-                android:imeOptions="actionDone"
-                />
+                app:imageUri="@{vm.uri}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_photo">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_upload"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/upload_image"
-            app:layout_constraintTop_toBottomOf="@id/inputLayout"
-            app:layout_constraintStart_toStartOf="@id/inputLayout"
-            app:layout_constraintEnd_toEndOf="@id/inputLayout"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:hint="@string/hint_image_content"
+                    android:gravity="top|start"
+                    android:minLines="2"
+                    android:imeOptions="actionDone"
+                    />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_upload"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_image"
+                app:layout_constraintTop_toBottomOf="@id/inputLayout"
+                app:layout_constraintStart_toStartOf="@id/inputLayout"
+                app:layout_constraintEnd_toEndOf="@id/inputLayout"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>
