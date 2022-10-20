@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.R
 import com.thk.instagram_clone.databinding.FragmentAlarmBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
-import com.thk.data.model.ALARM_COMMENT
-import com.thk.data.model.ALARM_FOLLOW
-import com.thk.data.model.ALARM_LIKE
 import com.thk.data.model.AlarmDto
+import com.thk.data.model.AlarmKind.ALARM_COMMENT
+import com.thk.data.model.AlarmKind.ALARM_FOLLOW
+import com.thk.data.model.AlarmKind.ALARM_LIKE
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.instagram_clone.viewmodel.AlarmViewModel

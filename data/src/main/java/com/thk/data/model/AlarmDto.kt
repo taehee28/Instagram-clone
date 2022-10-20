@@ -1,9 +1,5 @@
 package com.thk.data.model
 
-const val ALARM_LIKE = 0
-const val ALARM_COMMENT = 1
-const val ALARM_FOLLOW = 2
-
 data class AlarmDto(
     val destinationUid: String = "",
     val userId: String = "",
@@ -12,3 +8,9 @@ data class AlarmDto(
     val message: String = "",
     val timestamp: Long = 0
 )
+
+object AlarmKind {
+    const val ALARM_LIKE = 0
+    const val ALARM_COMMENT = 1
+    const val ALARM_FOLLOW = 2
+}

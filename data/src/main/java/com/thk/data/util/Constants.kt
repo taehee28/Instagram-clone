@@ -11,6 +11,7 @@ object PathString {
     const val profileImages = "profileImages"
     const val users = "users"
     const val images = "images"
+    const val comments = "comments"
 
     // storage path
     const val userProfileImages = "userProfileImages"

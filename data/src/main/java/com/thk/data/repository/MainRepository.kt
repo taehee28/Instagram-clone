@@ -3,13 +3,17 @@
 package com.thk.data.repository
 
 import android.net.Uri
+import android.provider.SyncStateContract.Constants
 import com.google.firebase.firestore.ktx.snapshots
 import com.thk.data.model.*
+import com.thk.data.model.AlarmKind.ALARM_FOLLOW
+import com.thk.data.model.AlarmKind.ALARM_LIKE
 import com.thk.data.remote.FcmPush
 import com.thk.data.util.Firebase
 import com.thk.data.util.PathString
 import com.thk.data.util.SystemString
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.thk.data.util.SystemString.ALARM_COMMENT
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
@@ -28,17 +32,26 @@ interface MainRepository {
     /**
      * 특정 uid의 포스트 얻기
      */
-    fun getPosts(uid: String?, onError: (String?) -> Unit): Flow<List<ContentDto>>
+    fun getPosts(
+        uid: String?,
+        onError: (String?) -> Unit,
+    ): Flow<List<ContentDto>>
 
     /**
      * 특정 uid의 팔로우 정보 얻기
      */
-    fun getFollowData(uid: String?, onError: (String?) -> Unit): Flow<FollowDto>
+    fun getFollowData(
+        uid: String?,
+        onError: (String?) -> Unit,
+    ): Flow<FollowDto>
 
     /**
      * 특정 uid의 프로필 이미지 url 얻기
      */
-    fun getProfileImageUrl(uid: String?, onError: (String?) -> Unit): Flow<String>
+    fun getProfileImageUrl(
+        uid: String?,
+        onError: (String?) -> Unit,
+    ): Flow<String>
 
     /**
      * 프로필 사진 업로드
@@ -53,15 +66,27 @@ interface MainRepository {
     /**
      * 팔로우/언팔로우 요청 처리 
      */
-    fun requestFollow(targetUid: String, followDto: FollowDto)
+    fun requestFollow(
+        targetUid: String,
+        followDto: FollowDto,
+    )
 
     /**
      * 좋아요 처리
      */
-    fun requestLike(contentUid: String, isSelected: Boolean)
+    fun requestLike(
+        contentUid: String,
+        isSelected: Boolean,
+    )
 
+    /**
+     * 알람 리스트 얻기
+     */
     fun getAlarmList(onError: (String?) -> Unit): Flow<List<AlarmDto>>
 
+    /**
+     * 포스트 업로드
+     */
     suspend fun uploadContent(
         photoUri: Uri?,
         text: String?,
@@ -69,6 +94,30 @@ interface MainRepository {
         onSuccess: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit
+    )
+
+    /**
+     * 댓글 목록 얻기
+     */
+    fun getComments(
+        contentUid: String?,
+        onError: (String?) -> Unit,
+    ): Flow<List<ContentDto.Comment>>
+
+    /**
+     * 댓글 전송
+     */
+    fun sendComment(
+        text: String,
+        contentUid: String?,
+    ): Result<Job>
+
+    /**
+     * 댓글 알림 등록
+     */
+    fun registerCommentAlarm(
+        destinationUid: String?,
+        message: String,
     )
 }
 
@@ -351,5 +400,72 @@ class MainRepositoryImpl : MainRepository {
     private fun createFileName() = run {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         "Image_${timestamp}_.png"
+    }
+
+    override fun getComments(contentUid: String?, onError: (String?) -> Unit): Flow<List<ContentDto.Comment>> = kotlin.runCatching {
+        requireNotNull(contentUid)
+
+        Firebase.firestore
+            .collection(PathString.images)
+            .document(contentUid)
+            .collection(PathString.comments)
+            .orderBy("timestamp")
+            .snapshots()
+            .mapLatest { value ->
+                value.documents.map {
+                    it.toObject(ContentDto.Comment::class.java)
+                        ?: throw IllegalArgumentException("null returned")
+                }
+            }.catch {
+                it.printStackTrace()
+            }
+    }.onFailure {
+        onError(it.message)
+    }.getOrDefault(emptyFlow())
+
+    override fun sendComment(text: String, contentUid: String?) = kotlin.runCatching {
+        requireNotNull(contentUid)
+        val uid = requireNotNull(Firebase.auth.currentUser?.uid)
+        val email = requireNotNull(Firebase.auth.currentUser?.email)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val comment = ContentDto.Comment (
+                userId = email,
+                uid = uid,
+                text = text,
+                timestamp = System.currentTimeMillis()
+            )
+
+            Firebase.firestore
+                .collection("images")
+                .document(contentUid)
+                .collection("comments")
+                .document()
+                .set(comment)
+        }
+    }
+
+    override fun registerCommentAlarm(destinationUid: String?, message: String) {
+        kotlin.runCatching {
+            requireNotNull(destinationUid)
+            val email = requireNotNull(Firebase.auth.currentUser?.email)
+
+            val alarmDto = AlarmDto(
+                destinationUid = destinationUid,
+                userId = Firebase.auth.currentUser?.email ?: "",
+                uid = Firebase.auth.currentUser?.uid ?: "",
+                message = message,
+                kind = AlarmKind.ALARM_COMMENT,
+                timestamp = System.currentTimeMillis()
+            )
+
+            Firebase.firestore
+                .collection("alarms")
+                .document()
+                .set(alarmDto)
+
+            val msg = format(SystemString.ALARM_COMMENT, email, message)
+            FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
+        }
     }
 }

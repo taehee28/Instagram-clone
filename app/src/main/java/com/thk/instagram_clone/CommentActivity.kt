@@ -5,99 +5,38 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.databinding.ActivityCommentBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
-import com.thk.data.model.ALARM_COMMENT
 import com.thk.data.model.AlarmDto
+import com.thk.data.model.AlarmKind.ALARM_COMMENT
 import com.thk.data.model.ContentDto
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
+import com.thk.instagram_clone.viewmodel.CommentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CommentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCommentBinding
 
-    private val args: CommentActivityArgs by navArgs()
-    private val contentUid: String by lazy { args.contentUid }
-    private val destinationUid: String by lazy { args.destinationUid }
-
-    private val listAdapter = CommentListAdapter()
+    private val viewModel: CommentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCommentBinding.inflate(layoutInflater)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_comment)
         setContentView(binding.root)
 
-        binding.btnSend.setOnClickListener {
-            val text = binding.etContent.text.toString()
-            binding.etContent.setText("")
-            sendComment(text)
-            registerCommentAlarm(destinationUid, text)
+        binding.apply {
+            lifecycleOwner = this@CommentActivity
+            vm = viewModel
+            adapter = CommentListAdapter()
         }
-        binding.rvCommentList.adapter = listAdapter
-
-        getCommentsFromFirestore()
-    }
-
-    private fun sendComment(text: String) {
-        val comment = ContentDto.Comment (
-            userId = Firebase.auth.currentUser?.email ?: "",
-            uid = Firebase.auth.currentUser?.uid ?: "",
-            text = text,
-            timestamp = System.currentTimeMillis()
-        )
-
-        Firebase.firestore
-            .collection("images")
-            .document(contentUid)
-            .collection("comments")
-            .document()
-            .set(comment)
-    }
-
-    private fun registerCommentAlarm(destinationUid: String?, message: String) {
-        if (!destinationUid.isNullOrBlank()) {
-            val alarmDto = AlarmDto(
-                destinationUid = destinationUid,
-                userId = Firebase.auth.currentUser?.email ?: "",
-                uid = Firebase.auth.currentUser?.uid ?: "",
-                message = message,
-                kind = ALARM_COMMENT,
-                timestamp = System.currentTimeMillis()
-            )
-
-            Firebase.firestore
-                .collection("alarms")
-                .document()
-                .set(alarmDto)
-
-            val msg = "${Firebase.auth.currentUser?.email} ${getString(R.string.alarm_comment)} of $message"
-//            FcmPush.sendMessage(destinationUid, "Instagram-clone", msg)
-        }
-    }
-
-    private fun getCommentsFromFirestore() {
-        Firebase.firestore
-            .collection("images")
-            .document(contentUid)
-            .collection("comments")
-            .orderBy("timestamp")
-            .addSnapshotListener { value, error ->
-                kotlin.runCatching {
-                    value?.documents?.map {
-                        it.toObject(ContentDto.Comment::class.java)
-                    } ?: throw IllegalArgumentException("Failed to get list(null returned)")
-                }.onSuccess {
-                    Log.d("TAG", "getCommentsFromFirestore: list = ${it.toString()}")
-                    listAdapter.submitList(it)
-                }.onFailure { e ->
-                    e.printStackTrace()
-                    error?.printStackTrace()
-                }
-            }
     }
 }
 
