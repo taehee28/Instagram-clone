@@ -17,14 +17,9 @@ class LoginViewModel @Inject constructor(
     val uiEvent: MutableLiveData<UiEvent?> = MutableLiveData(null)
 
     private val onStart = { showLoading.value = true }
-    private val onSuccess = {
-        showLoading.value = false
-        uiEvent.value = UiEvent.LoginSuccess
-    }
-    private val onError = { msg: String? ->
-        showLoading.value = false
-        errorMessage.value = msg
-    }
+    private val onSuccess = { uiEvent.value = UiEvent.LoginSuccess }
+    private val onError = { msg: String? -> errorMessage.value = msg }
+    private val onComplete = { showLoading.value = false }
 
     init {
         // 자동로그인
@@ -38,7 +33,8 @@ class LoginViewModel @Inject constructor(
         password = password,
         onStart = onStart,
         onSuccess = onSuccess,
-        onError = onError
+        onError = onError,
+        onComplete = onComplete
     )
 
     /**
@@ -48,7 +44,8 @@ class LoginViewModel @Inject constructor(
         account = account,
         onStart = onStart,
         onSuccess = onSuccess,
-        onError = onError
+        onError = onError,
+        onComplete = onComplete
     )
 
     sealed class UiEvent {

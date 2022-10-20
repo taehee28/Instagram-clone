@@ -18,7 +18,8 @@ interface LoginRepository {
         password: String,
         onStart: () -> Unit,
         onSuccess: () -> Unit,
-        onError: (String?) -> Unit
+        onError: (String?) -> Unit,
+        onComplete: () -> Unit
     )
 
     /**
@@ -28,7 +29,8 @@ interface LoginRepository {
         account: GoogleSignInAccount?,
         onStart: () -> Unit,
         onSuccess: () -> Unit,
-        onError: (String?) -> Unit
+        onError: (String?) -> Unit,
+        onComplete: () -> Unit
     )
 }
 
@@ -38,7 +40,8 @@ class LoginRepositoryImpl : LoginRepository {
         password: String,
         onStart: () -> Unit,
         onSuccess: () -> Unit,
-        onError: (String?) -> Unit
+        onError: (String?) -> Unit,
+        onComplete: () -> Unit
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             onStart()
@@ -61,6 +64,8 @@ class LoginRepositoryImpl : LoginRepository {
                 onError(it.message)
             }.onSuccess {
                 onSuccess()
+            }.also {
+                onComplete()
             }
         }
     }
@@ -83,7 +88,8 @@ class LoginRepositoryImpl : LoginRepository {
         account: GoogleSignInAccount?,
         onStart: () -> Unit,
         onSuccess: () -> Unit,
-        onError: (String?) -> Unit
+        onError: (String?) -> Unit,
+        onComplete: () -> Unit
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             onStart()
@@ -99,6 +105,8 @@ class LoginRepositoryImpl : LoginRepository {
                 onError(it.message)
             }.onSuccess {
                 onSuccess()
+            }.also {
+                onComplete()
             }
         }
     }
