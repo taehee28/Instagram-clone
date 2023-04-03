@@ -54,10 +54,7 @@ class LoginRepositoryImpl : LoginRepository {
             }.recoverCatching {
                 when (it) {
                     is FirebaseAuthUserCollisionException -> signIn(email, password)
-                    else -> {
-                        it.printStackTrace()
-                        onError(it.message)
-                    }
+                    else -> throw it
                 }
             }.onFailure {
                 it.printStackTrace()
