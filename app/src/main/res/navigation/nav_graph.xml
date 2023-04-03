@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/detailViewFragment"
-        android:name="com.thk.instagram_clone.navigation.DetailViewFragment"
+        android:name="com.thk.instagram_clone.ui.home.feed.DetailViewFragment"
         android:label="DetailViewFragment"
         tools:layout="@layout/fragment_detail_view">
         <action
@@ -19,23 +19,23 @@
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.thk.instagram_clone.navigation.AccountFragment"
+        android:name="com.thk.instagram_clone.ui.home.account.AccountFragment"
         android:label="AccountFragment" >
     </fragment>
 
     <fragment
         android:id="@+id/alarmFragment"
-        android:name="com.thk.instagram_clone.navigation.AlarmFragment"
+        android:name="com.thk.instagram_clone.ui.home.alarm.AlarmFragment"
         android:label="AlarmFragment" />
 
     <activity
         android:id="@+id/addPhotoActivity"
-        android:name="com.thk.instagram_clone.AddPhotoActivity"
+        android:name="com.thk.instagram_clone.ui.home.addphoto.AddPhotoActivity"
         android:label="activity_add_photo"
         tools:layout="@layout/activity_add_photo" />
     <fragment
         android:id="@+id/profileViewFragment"
-        android:name="com.thk.instagram_clone.navigation.ProfileViewFragment"
+        android:name="com.thk.instagram_clone.ui.home.account.ProfileViewFragment"
         android:label="ProfileViewFragment" >
         <argument
             android:name="uid"
@@ -48,11 +48,11 @@
     </fragment>
     <fragment
         android:id="@+id/gridFragment"
-        android:name="com.thk.instagram_clone.navigation.GridFragment"
+        android:name="com.thk.instagram_clone.ui.home.search.GridFragment"
         android:label="GridFragment" />
     <activity
         android:id="@+id/commentActivity"
-        android:name="com.thk.instagram_clone.CommentActivity"
+        android:name="com.thk.instagram_clone.ui.home.feed.CommentActivity"
         android:label="activity_comment"
         tools:layout="@layout/activity_comment">
         <argument

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.navigation
+package com.thk.instagram_clone.ui.home.account
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,18 +11,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.thk.instagram_clone.MainActivity
+import com.thk.instagram_clone.ui.home.MainActivity
 import com.thk.instagram_clone.R
-import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.data.model.FollowDto
-import com.thk.instagram_clone.viewmodel.AccountViewModel
+import com.thk.instagram_clone.ui.home.common.PostListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class ProfileViewFragment : Fragment() {

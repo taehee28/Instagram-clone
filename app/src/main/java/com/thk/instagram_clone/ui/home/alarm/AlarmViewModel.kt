@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.thk.instagram_clone.viewmodel
+package com.thk.instagram_clone.ui.home.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

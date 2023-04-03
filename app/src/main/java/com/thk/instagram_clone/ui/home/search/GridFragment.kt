@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.navigation
+package com.thk.instagram_clone.ui.home.search
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,17 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.thk.instagram_clone.R
-import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.instagram_clone.databinding.FragmentGridBinding
-import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import com.thk.instagram_clone.ui.home.common.PostListAdapter
+import com.thk.instagram_clone.ui.home.feed.DetailViewViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GridFragment : Fragment() {

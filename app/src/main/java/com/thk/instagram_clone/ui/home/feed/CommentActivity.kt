@@ -1,24 +1,20 @@
-package com.thk.instagram_clone
+package com.thk.instagram_clone.ui.home.feed
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.thk.instagram_clone.databinding.ActivityCommentBinding
 import com.thk.instagram_clone.databinding.ItemCommentBinding
-import com.thk.data.model.AlarmDto
-import com.thk.data.model.AlarmKind.ALARM_COMMENT
 import com.thk.data.model.ContentDto
 import com.thk.data.util.Firebase
+import com.thk.instagram_clone.R
 import com.thk.instagram_clone.util.GlideApp
-import com.thk.instagram_clone.viewmodel.CommentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

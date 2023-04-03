@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.viewmodel
+package com.thk.instagram_clone.ui.home.addphoto
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData

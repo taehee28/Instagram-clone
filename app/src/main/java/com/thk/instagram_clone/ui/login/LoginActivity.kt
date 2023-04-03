@@ -1,4 +1,4 @@
-package com.thk.instagram_clone
+package com.thk.instagram_clone.ui.login
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,9 +8,10 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.thk.instagram_clone.ui.home.MainActivity
+import com.thk.instagram_clone.R
 import com.thk.instagram_clone.databinding.ActivityLoginBinding
-import com.thk.instagram_clone.viewmodel.LoginViewModel
-import com.thk.instagram_clone.viewmodel.LoginViewModel.UiEvent
+import com.thk.instagram_clone.ui.login.LoginViewModel.UiEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

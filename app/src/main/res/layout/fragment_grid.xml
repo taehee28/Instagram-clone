@@ -6,11 +6,11 @@
     <data>
         <variable
             name="adapter"
-            type="com.thk.instagram_clone.adapter.PostListAdapter" />
+            type="com.thk.instagram_clone.ui.home.common.PostListAdapter" />
 
         <variable
             name="vm"
-            type="com.thk.instagram_clone.viewmodel.DetailViewViewModel" />
+            type="com.thk.instagram_clone.ui.home.feed.DetailViewViewModel" />
     </data>
 
     <FrameLayout

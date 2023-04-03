@@ -6,10 +6,10 @@
     <data>
         <variable
             name="vm"
-            type="com.thk.instagram_clone.viewmodel.CommentViewModel" />
+            type="com.thk.instagram_clone.ui.home.feed.CommentViewModel" />
         <variable
             name="adapter"
-            type="com.thk.instagram_clone.CommentListAdapter" />
+            type="com.thk.instagram_clone.ui.home.feed.CommentListAdapter" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.navigation
+package com.thk.instagram_clone.ui.home.alarm
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -22,11 +19,8 @@ import com.thk.data.model.AlarmKind.ALARM_FOLLOW
 import com.thk.data.model.AlarmKind.ALARM_LIKE
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
-import com.thk.instagram_clone.viewmodel.AlarmViewModel
+import com.thk.instagram_clone.ui.home.alarm.AlarmViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AlarmFragment : Fragment() {

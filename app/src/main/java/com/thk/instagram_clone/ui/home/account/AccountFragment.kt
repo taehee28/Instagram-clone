@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.navigation
+package com.thk.instagram_clone.ui.home.account
 
 import android.app.Activity
 import android.content.Intent
@@ -10,13 +10,11 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import com.thk.instagram_clone.LoginActivity
+import com.thk.instagram_clone.ui.login.LoginActivity
 import com.thk.instagram_clone.R
-import com.thk.instagram_clone.adapter.PostListAdapter
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.databinding.FragmentAccountBinding
-import com.thk.instagram_clone.util.LoadingDialog
-import com.thk.instagram_clone.viewmodel.AccountViewModel
+import com.thk.instagram_clone.ui.home.common.PostListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

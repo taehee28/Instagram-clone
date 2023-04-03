@@ -1,8 +1,7 @@
-package com.thk.instagram_clone
+package com.thk.instagram_clone.ui.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,7 +9,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
 import com.thk.instagram_clone.databinding.ActivityMainBinding
 import com.thk.data.util.Firebase
-import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import com.thk.instagram_clone.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,7 +61,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val appBarConfig = AppBarConfiguration(setOf(R.id.detailViewFragment, R.id.alarmFragment, R.id.accountFragment, R.id.gridFragment))
+        val appBarConfig = AppBarConfiguration(setOf(
+            R.id.detailViewFragment,
+            R.id.alarmFragment,
+            R.id.accountFragment,
+            R.id.gridFragment
+        ))
         binding.toolbar.setupWithNavController(controller, appBarConfig)
     }
 

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.binding
+package com.thk.instagram_clone.ui.binding
 
 import android.net.Uri
 import android.view.View
@@ -11,7 +11,6 @@ import com.thk.instagram_clone.R
 import com.thk.data.util.Firebase
 import com.thk.instagram_clone.util.GlideApp
 import com.thk.data.util.PathString
-import com.thk.data.util.logd
 import com.thk.instagram_clone.util.LoadingDialog
 
 object ViewBinding {

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.viewmodel
+package com.thk.instagram_clone.ui.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

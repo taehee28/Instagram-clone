@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.thk.instagram_clone.viewmodel
+package com.thk.instagram_clone.ui.home.account
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData

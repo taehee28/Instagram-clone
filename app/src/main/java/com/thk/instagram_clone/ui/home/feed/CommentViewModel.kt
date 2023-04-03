@@ -1,13 +1,11 @@
-package com.thk.instagram_clone.viewmodel
+package com.thk.instagram_clone.ui.home.feed
 
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thk.data.model.ContentDto
 import com.thk.data.repository.MainRepository
-import com.thk.data.util.logd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject

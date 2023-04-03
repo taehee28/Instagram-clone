@@ -1,19 +1,15 @@
-package com.thk.instagram_clone
+package com.thk.instagram_clone.ui.home.addphoto
 
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
+import com.thk.instagram_clone.R
 import com.thk.instagram_clone.databinding.ActivityAddPhotoBinding
-import com.thk.instagram_clone.util.LoadingDialog
-import com.thk.instagram_clone.viewmodel.AddPhotoViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AddPhotoActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.adapter
+package com.thk.instagram_clone.ui.home.common
 
 import android.view.ViewGroup
 import android.widget.ImageView

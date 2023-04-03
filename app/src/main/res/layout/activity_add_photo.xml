@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.thk.instagram_clone.viewmodel.AddPhotoViewModel" />
+            type="com.thk.instagram_clone.ui.home.addphoto.AddPhotoViewModel" />
         <variable
             name="finish"
             type="Function0&lt;Unit>" />
@@ -19,7 +19,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".AddPhotoActivity">
+        tools:context=".ui.home.addphoto.AddPhotoActivity">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"

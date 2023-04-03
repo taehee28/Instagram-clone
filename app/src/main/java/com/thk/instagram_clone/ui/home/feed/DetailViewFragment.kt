@@ -1,4 +1,4 @@
-package com.thk.instagram_clone.navigation
+package com.thk.instagram_clone.ui.home.feed
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,7 +15,7 @@ import com.thk.instagram_clone.R
 import com.thk.instagram_clone.databinding.FragmentDetailViewBinding
 import com.thk.instagram_clone.databinding.ItemDetailViewBinding
 import com.thk.data.model.ContentDto
-import com.thk.instagram_clone.viewmodel.DetailViewViewModel
+import com.thk.instagram_clone.ui.home.feed.DetailViewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
