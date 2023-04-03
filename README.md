@@ -1,9 +1,14 @@
 # instagram-clone
 Instagram clone 프로젝트 
 
+<p align="center">
+    <img src="./img/Instagram-clone_login.jpg" width="260">
+    <img src="./img/Instagram-clone_feed.jpg" width="260">
+    <img src="./img/Instagram-clone_account.jpg" width="260">
+</p>
+
 ## 강의 내용과 다르게 구현한 점
-* Data 모듈 추가하여 CleanArchitecture 적용
-* MVVM 패턴
+* CleanArchitecture | MVVM 
 * Hilt, Coroutine(Flow), LiveData, DataBinding, Navigation 사용
 * layout xml 구현 시 ConstraintLayout, CoordinatorLayout 사용
 * RecyclerView 어댑터로 ListAdapter 사용
